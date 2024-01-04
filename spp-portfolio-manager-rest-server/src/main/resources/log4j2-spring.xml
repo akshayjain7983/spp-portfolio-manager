@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="ERROR" strict="false" monitorInterval="10">
+
+	<properties>
+		<Property name="baseDir">/var/log/spp</Property>
+	</properties>
+
+	<Appenders>
+		<Console name="sppConsole" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="[%d] [%p] [%c] [%t] [%F: %L] %m%n" />
+		</Console>
+		<RollingFile name="sppRoll"
+			fileName="${baseDir}/spp-portfolio-manager.log"
+			filePattern="${baseDir}/spp-portfolio-manager-%d{yyyy-MM-dd}.log.gz"
+			filePermissions="rwxrwxrwx">
+			<PatternLayout
+				pattern="[%d] [%p] [%c] [%t] [%F: %L] %m%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+			<DefaultRolloverStrategy>
+				<Delete basePath="${baseDir}">
+					<IfLastModified age="2d" />
+				</Delete>
+			</DefaultRolloverStrategy>
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+        <Logger name="spp.portfolio" level="debug" includeLocation="true" additivity="false">
+            <!-- <AppenderRef ref="sppRoll"/> -->
+            <AppenderRef ref="sppConsole"/>
+        </Logger>
+		<Logger name="org.springframework" level="error" includeLocation="true" additivity="false">
+            <!-- <AppenderRef ref="sppRoll"/> -->
+            <AppenderRef ref="sppConsole"/>
+        </Logger>
+        <Logger name="org.hibernate" level="error" includeLocation="true" additivity="false">
+            <!-- <AppenderRef ref="sppRoll"/> -->
+            <AppenderRef ref="sppConsole"/>
+        </Logger>
+        <Logger name="org.apache.http" level="error" includeLocation="true" additivity="false">
+            <!-- <AppenderRef ref="sppRoll"/> -->
+            <AppenderRef ref="sppConsole"/>
+        </Logger>
+        <Root level="info" includeLocation="true">
+            <!-- <AppenderRef ref="sppRoll"/> -->
+            <AppenderRef ref="sppConsole"/>
+        </Root>
+	</Loggers>
+</Configuration>
