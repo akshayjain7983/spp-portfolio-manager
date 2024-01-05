@@ -9,18 +9,18 @@ public interface BooleanOperator extends Operator
     {
         switch (symbol)
         {
-            case "&&": return new AndOperator();
-            case "||": return new OrOperator();
-            case "^": return new XorOperator();
-            case "!": return new NotOperator();
+            case "AND": return new AndOperator();
+            case "OR": return new OrOperator();
+            case "XOR": return new XorOperator();
+            case "NOT": return new NotOperator();
             
             default:
                 throw new IllegalArgumentException("Unexpected value: " + symbol);
         }
     }
     
-    @Data @NoArgsConstructor public static class AndOperator implements BooleanOperator{private final String symbol = "&&";}
-    @Data @NoArgsConstructor public static class OrOperator implements BooleanOperator{private final String symbol = "||";}
-    @Data @NoArgsConstructor public static class XorOperator implements BooleanOperator{private final String symbol = "^";}
-    @Data @NoArgsConstructor public static class NotOperator implements BooleanOperator{private final String symbol = "!";}
+    @Data @NoArgsConstructor public static class AndOperator implements BooleanOperator{private final String symbol = "AND";}
+    @Data @NoArgsConstructor public static class OrOperator implements BooleanOperator{private final String symbol = "OR";}
+    @Data @NoArgsConstructor public static class XorOperator implements BooleanOperator{private final String symbol = "XOR";}
+    @Data @NoArgsConstructor public static class NotOperator implements BooleanOperator{private final String symbol = "NOT";}
 }

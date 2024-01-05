@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class FiltersRule implements PortfolioRule
 {
-    private CompoundFilter filter;
+    private CompoundFilter rootFilter;
 }

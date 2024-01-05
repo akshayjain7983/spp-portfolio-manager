@@ -17,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import spp.portfolio.model.definition.configuration.PortfolioConfiguration;
 
 @Data
 @Entity
@@ -35,7 +36,7 @@ public class PortfolioDefinitionConfiguration
     
     private LocalDate validFrom;
     private LocalDate validTo;
-    private String configuration;
+    private PortfolioConfiguration configuration;
     @LastModifiedDate
     private Instant lastUpdatedTimestamp;
     private String lastUpdatedBy;

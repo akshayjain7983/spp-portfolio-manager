@@ -1,17 +1,12 @@
 package spp.portfolio.model.definition.configuration;
 
 import lombok.Data;
+import spp.portfolio.model.definition.configuration.constituents.PortfolioConfigurationConstituents;
 
 @Data
 public class PortfolioConfiguration
 {
-    private Currency currency;
-    private Long portfolioAmountLimit;
-    
-    public PortfolioConfiguration(Currency currency, Long portfolioAmountLimit)
-    {
-        this.currency = currency;
-        this.portfolioAmountLimit = portfolioAmountLimit;
-    }
-    
+    private final Currency currency;
+    private final Long portfolioAmountLimit;
+    private PortfolioConfigurationConstituents portfolioConfigurationConstituents;
 }

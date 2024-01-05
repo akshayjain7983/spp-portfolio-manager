@@ -1,20 +1,33 @@
 package spp.portfolio.model.definition.configuration;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
-@Data
-@AllArgsConstructor
-@EqualsAndHashCode(of = "symbol")
-public class Currency
+@Getter
+@ToString
+public enum Currency
 {
-    private String symbol;
-    private String name;
-    private String region;
+    INR("INR", "Indian Rupee", "India");
     
-    public Currency(String symbol)
+    private final String code;
+    private final String name;
+    private final String region;
+    
+    private Currency(String symbol, String name, String region)
     {
-        this(symbol, null, null);
+        this.code = symbol;
+        this.name = name;
+        this.region = region;
+    }
+    
+    public static Currency fromSymbol(String symbol)
+    {
+        switch (symbol)
+        {
+            case "INR": return INR;
+            
+            default:
+                throw new IllegalArgumentException("Unexpected value: " + symbol);
+        }
     }
 }
