@@ -1,30 +1,36 @@
 package spp.portfolio.model.definition.configuration.rules;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
 
-public interface ComparisonOperator extends Operator
+@Getter
+@ToString
+@AllArgsConstructor
+public enum ComparisonOperator
 {
-    static ComparisonOperator getComparisonOperator(String symbol)
+    GREATER_THAN(">"),
+    GREATER_THAN_EQUAL(">="),
+    LESS_THAN("<"),
+    LESS_THAN_EQUAL("<="),
+    NOT_EQUAL("!="),
+    EQUAL("==");
+    
+    private final String symbol;
+    
+    public static ComparisonOperator getFromSymbol(String symbol)
     {
         switch (symbol)
         {
-            case ">": return new GreaterThanOperator();
-            case ">=": return new GreaterThanEqualOperator();
-            case "<": return new LessThanOperator();
-            case "<=": return new LessThanEqualOperator();
-            case "!=": return new NotEqualOperator();
-            case "==": return new EqualOperator();
+            case ">": return GREATER_THAN;
+            case ">=": return GREATER_THAN_EQUAL;
+            case "<": return LESS_THAN;
+            case "<=": return LESS_THAN_EQUAL;
+            case "!=": return NOT_EQUAL;
+            case "==": return EQUAL;
             
             default:
                 throw new IllegalArgumentException("Unexpected value: " + symbol);
         }
-    }
-    
-    @Data @NoArgsConstructor public static class GreaterThanOperator implements ComparisonOperator{private final String symbol = ">";}
-    @Data @NoArgsConstructor public static class GreaterThanEqualOperator implements ComparisonOperator{private final String symbol = ">=";}
-    @Data @NoArgsConstructor public static class LessThanOperator implements ComparisonOperator{private final String symbol = "<";}
-    @Data @NoArgsConstructor public static class LessThanEqualOperator implements ComparisonOperator{private final String symbol = "<=";}
-    @Data @NoArgsConstructor public static class NotEqualOperator implements ComparisonOperator{private final String symbol = "!=";}
-    @Data @NoArgsConstructor public static class EqualOperator implements ComparisonOperator{private final String symbol = "==";}    
+    }   
 }

@@ -1,10 +1,12 @@
 package spp.portfolio.model.definition.configuration;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
 @Getter
 @ToString
+@AllArgsConstructor
 public enum Currency
 {
     INR("INR", "Indian Rupee", "India");
@@ -13,21 +15,14 @@ public enum Currency
     private final String name;
     private final String region;
     
-    private Currency(String symbol, String name, String region)
+    public static Currency fromCode(String code)
     {
-        this.code = symbol;
-        this.name = name;
-        this.region = region;
-    }
-    
-    public static Currency fromSymbol(String symbol)
-    {
-        switch (symbol)
+        switch (code)
         {
             case "INR": return INR;
             
             default:
-                throw new IllegalArgumentException("Unexpected value: " + symbol);
+                throw new IllegalArgumentException("Unexpected value: " + code);
         }
     }
 }
