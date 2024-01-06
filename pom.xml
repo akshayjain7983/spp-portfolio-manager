@@ -19,6 +19,7 @@
 	<modules>
 		<module>spp-portfolio-model</module>
 		<module>spp-portfolio-configuration-manager</module>
+   		<module>spp-portfolio-constituents-manager</module>
 		<module>spp-portfolio-manager-rest-server</module>
 	</modules>
 
@@ -32,6 +33,11 @@
 			<dependency>
 				<groupId>spp</groupId>
 				<artifactId>spp-portfolio-configuration-manager</artifactId>
+				<version>${revision}</version>
+			</dependency>
+			<dependency>
+				<groupId>spp</groupId>
+				<artifactId>spp-portfolio-constituents-manager</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>
