@@ -13,6 +13,12 @@ import spp.portfolio.constituents.rules.Security;
 public class FiltersRule implements PortfolioRule
 {
     private CompoundFilter rootFilter;
+
+    @Override
+    public boolean doExecute(ConcurrentApplicationContext context)
+    {
+        return true;
+    }
     
     @Override
     public Collection<Security> execute(Collection<Security> securities, ConcurrentApplicationContext context)
@@ -21,10 +27,10 @@ public class FiltersRule implements PortfolioRule
                 Optional.ofNullable(securities)
                 .orElse(Collections.emptyList())
                 .parallelStream()
-                .map(s->Optional.ofNullable(s))
+                .map(Optional::ofNullable)
                 .map(s->rootFilter.execute(s, context))
-                .filter(s->s.isPresent())
-                .map(s->s.get())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(Collectors.toList());
     }
 }

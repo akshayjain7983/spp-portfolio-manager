@@ -1,5 +1,7 @@
 package spp.portfolio.constituents.rules.inmemory;
 
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.securityOutpointMapKey;
+
 import java.util.Optional;
 
 import io.github.funofprograming.context.ConcurrentApplicationContext;
@@ -15,12 +17,18 @@ public class ExpressionFilter implements Filter
     public Optional<Security> execute(Optional<Security> security, ConcurrentApplicationContext context)
     {
         Class<?> expressionResultType = expression.resultType();
+        Optional<Security> result = Optional.empty();
         if(Boolean.class.isAssignableFrom(expressionResultType))
         {
-            return executeBoolean(security, context);
+            result = executeBoolean(security, context);
         }
         
-        return Optional.empty();
+        if(result.isEmpty())
+        {
+            security.ifPresent(s->context.fetch(securityOutpointMapKey).put(s.getSecurityId(), expression.toString()));
+        }
+        
+        return result;
     }
 
     @SuppressWarnings("unchecked")

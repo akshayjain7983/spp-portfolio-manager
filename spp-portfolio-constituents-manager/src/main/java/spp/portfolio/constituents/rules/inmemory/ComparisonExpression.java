@@ -175,4 +175,10 @@ public class ComparisonExpression implements Expression<Boolean>
             default -> throw new IllegalArgumentException("Unexpected type: " + leftSideObject.getClass());
         }
     }
+
+    @Override
+    public String toString()
+    {
+        return "ComparisonExpression [" + leftSide + " " + operator.getSymbol() + " " + rightSide + "]";
+    }
 }

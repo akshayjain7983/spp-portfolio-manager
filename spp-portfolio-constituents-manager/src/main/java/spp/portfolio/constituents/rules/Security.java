@@ -4,6 +4,8 @@ public interface Security
 {
     SecurityType getType();
     
+    Long getSecurityId();
+    
     <T> T getAttributeValue(String attributeKey, Class<T> attributeType);
     
     default Object getAttributeValue(String attributeKey)

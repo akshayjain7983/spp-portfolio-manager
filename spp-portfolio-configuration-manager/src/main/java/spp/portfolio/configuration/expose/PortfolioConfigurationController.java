@@ -1,4 +1,4 @@
-package spp.portfolio.configuration.rest;
+package spp.portfolio.configuration.expose;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -16,11 +16,12 @@ import spp.portfolio.model.definition.PortfolioDefinition;
 import spp.portfolio.model.exception.SppException;
 
 @RestController
-public class PortfolioConfigurationController
+public class PortfolioConfigurationController implements PortfolioConfigurationManager
 {
     @Autowired
     private PortfolioDefinitionRepository portfolioDefinitionRepository;
     
+    @Override
     @PostMapping("/portfolio-definition")
     public PortfolioDefinition createPortfolioDefinition(@RequestBody PortfolioDefinition portfolioDefinition)
     {
@@ -30,6 +31,7 @@ public class PortfolioConfigurationController
         return portfolioDefinitionRepository.save(portfolioDefinition);
     }
     
+    @Override
     @PutMapping("/portfolio-definition/{id}")
     public PortfolioDefinition updatePortfolioDefinition(@PathVariable Long id, @RequestBody PortfolioDefinition portfolioDefinition)
     {
@@ -45,6 +47,7 @@ public class PortfolioConfigurationController
         return portfolioDefinitionRepository.save(portfolioDefinition);
     }
     
+    @Override
     @GetMapping("/portfolio-definition/{id}")
     public Optional<PortfolioDefinition> getPortfolioDefinition(@PathVariable Long id)
     {

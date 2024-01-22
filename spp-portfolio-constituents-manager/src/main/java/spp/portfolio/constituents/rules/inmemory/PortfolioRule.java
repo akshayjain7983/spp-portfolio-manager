@@ -19,5 +19,7 @@ import spp.portfolio.constituents.rules.Security;
 })
 public interface PortfolioRule
 {
+    boolean doExecute(ConcurrentApplicationContext context);
+    
     Collection<Security> execute(Collection<Security> securities, ConcurrentApplicationContext context);
 }

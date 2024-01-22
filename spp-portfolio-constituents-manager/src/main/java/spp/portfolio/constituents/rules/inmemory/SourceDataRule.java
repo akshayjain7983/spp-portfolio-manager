@@ -13,6 +13,12 @@ public class SourceDataRule implements PortfolioRule
 {
     private String exchange;
     private SecurityType securityType;
+
+    @Override
+    public boolean doExecute(ConcurrentApplicationContext context)
+    {
+        return true;
+    }
     
     @Override
     public Collection<Security> execute(Collection<Security> securities, ConcurrentApplicationContext context)
