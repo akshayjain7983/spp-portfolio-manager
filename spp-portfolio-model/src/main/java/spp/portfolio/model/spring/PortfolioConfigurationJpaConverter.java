@@ -1,7 +1,7 @@
 package spp.portfolio.model.spring;
 
-import static spp.portfolio.model.json.JsonUtil.fromJson;
-import static spp.portfolio.model.json.JsonUtil.toJson;
+import static spp.portfolio.manager.utilities.json.JsonUtil.fromJson;
+import static spp.portfolio.manager.utilities.json.JsonUtil.toJson;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class ComparisonExpression implements Expression
 {
-    private String leftSide;
+    private Attribute<?> leftSide;
     private ComparisonOperator operator;
-    private String rightSide;
+    private Attribute<?> rightSide;
 }

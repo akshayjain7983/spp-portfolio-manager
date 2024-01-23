@@ -1,4 +1,4 @@
-package spp.portfolio.model.spring;
+package spp.portfolio.manager.utilities.spring;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

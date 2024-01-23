@@ -1,7 +1,7 @@
 package spp.portfolio.constituents.json;
 
-import static spp.portfolio.model.json.JsonSerializationBuilders.buildJsonDeserializer;
-import static spp.portfolio.model.json.JsonSerializationBuilders.buildJsonSerializer;
+import static spp.portfolio.manager.utilities.json.JsonSerializationBuilders.buildJsonDeserializer;
+import static spp.portfolio.manager.utilities.json.JsonSerializationBuilders.buildJsonSerializer;
 
 import java.util.Objects;
 import java.util.Optional;

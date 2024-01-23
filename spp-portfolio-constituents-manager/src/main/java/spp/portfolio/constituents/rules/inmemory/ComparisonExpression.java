@@ -1,26 +1,25 @@
 package spp.portfolio.constituents.rules.inmemory;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
 
 import io.github.funofprograming.context.ConcurrentApplicationContext;
 import lombok.Data;
 import spp.portfolio.constituents.rules.Security;
+import spp.portfolio.manager.utilities.json.JsonUtil;
 
 @Data
 public class ComparisonExpression implements Expression<Boolean>
 {
-    private String leftSide;
+    private Attribute<?> leftSide;
     private ComparisonOperator operator;
-    private String rightSide;
+    private Attribute<?> rightSide;
     
     @Override
     public Class<Boolean> resultType()
@@ -34,16 +33,30 @@ public class ComparisonExpression implements Expression<Boolean>
         if(security.isEmpty())
             return Boolean.FALSE;
         
-        Object leftSideObject = security.get().getAttributeValue(leftSide);
+        Object leftSideObject = parseAttribute(leftSide, security);
         if(Objects.isNull(leftSideObject))
             return Boolean.FALSE;
         
         
-        Object rightSideObject = parseRightSideObject(leftSideObject);
+        Object rightSideObject = parseAttribute(rightSide, security);
         if(Objects.isNull(rightSideObject))
             return Boolean.FALSE;
         
         return compare(leftSideObject, rightSideObject);
+    }
+    
+    private Object parseAttribute(Attribute<?> attribute, Optional<Security> security)
+    {
+        Class<?> attributeType = attribute.getType();
+        String literalValue = attribute.getLiteralValue();
+        if(Objects.nonNull(literalValue))
+        {
+            return JsonUtil.viaJson(literalValue, attributeType);
+        }
+        else 
+        {
+            return security.map(s->s.getAttributeValue(attribute.getName(), attributeType)).orElse(null);
+        }
     }
 
     private Boolean compare(Object leftSideObject, Object rightSideObject)
@@ -126,56 +139,7 @@ public class ComparisonExpression implements Expression<Boolean>
                 throw new IllegalArgumentException("Unexpected value: " + operator);
         }
     }
-
-    private Object parseRightSideObject(Object leftSideObject)
-    {
-        switch (leftSideObject)
-        {
-            case String s->
-            {
-                return rightSide;
-            }
-            case LocalDate t->
-            {
-                return DateTimeFormatter.ISO_LOCAL_DATE.parse(rightSide);
-            }
-            case LocalDateTime t->
-            {
-                return DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(rightSide);
-            }
-            case ZonedDateTime t->
-            {
-                return DateTimeFormatter.ISO_ZONED_DATE_TIME.parse(rightSide);
-            }
-            case Integer n->
-            {
-                return Integer.valueOf(rightSide);
-            }
-            case Long n->
-            {
-                return Long.valueOf(rightSide);
-            }
-            case Float n->
-            {
-                return Float.valueOf(rightSide);
-            }
-            case Double n->
-            {
-                return Double.valueOf(rightSide);
-            }
-            case BigInteger n->
-            {
-                return new BigInteger(rightSide);
-            }
-            case BigDecimal n->
-            {
-                return new BigDecimal(rightSide);
-            }
-            
-            default -> throw new IllegalArgumentException("Unexpected type: " + leftSideObject.getClass());
-        }
-    }
-
+    
     @Override
     public String toString()
     {

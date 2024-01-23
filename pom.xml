@@ -17,8 +17,8 @@
 	<version>${revision}</version>
 	<packaging>pom</packaging>
 	<modules>
-		<module>spp-portfolio-model</module>
 		<module>spp-portfolio-manager-utilities</module>
+		<module>spp-portfolio-model</module>
 		<module>spp-portfolio-configuration-manager</module>
    		<module>spp-portfolio-constituents-manager</module>
 		<module>spp-portfolio-manager-rest-server</module>
@@ -55,6 +55,21 @@
 				<groupId>io.github.funofprograming</groupId>
 				<artifactId>application-context-util</artifactId>
 				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.13.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-collections4</artifactId>
+				<version>4.4</version>				
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-math3</artifactId>
+				<version>3.6.1</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

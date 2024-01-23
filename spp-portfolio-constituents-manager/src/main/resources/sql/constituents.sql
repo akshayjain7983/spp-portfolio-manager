@@ -28,9 +28,9 @@ AND sic.effective_date <= :rebalanceDate
 AND sic.discontinued_date > :rebalanceDate
 LEFT OUTER JOIN (
 	SELECT * FROM crosstab('
-		SELECT security_id::int4, identifier_key::varchar, identifier_value::varchar  FROM spp.security_identifiers si 
-		WHERE security_id = 4075
-		AND effective_date <= '''||:rebalanceDate||'''
+		SELECT security_id::int4, identifier_key::varchar, identifier_value::varchar  
+		FROM spp.security_identifiers si 
+		WHERE effective_date <= '''||:rebalanceDate||'''
 		AND discontinued_date > '''||:rebalanceDate||'''
 		ORDER BY 1,2')
 	AS (security_id int4, isin varchar, ticker varchar)
@@ -38,7 +38,9 @@ LEFT OUTER JOIN (
 ON s.id = sid.security_id
 WHERE 
 s.status = 'Active'
+AND
+s.segment = :segment
 AND 
-CASE WHEN :exchangeCode IS NULL THEN 1=1
+CASE WHEN cast(:exchangeCode AS varchar) IS NULL THEN 1=1
 ELSE s.exchange_code = :exchangeCode
 END 

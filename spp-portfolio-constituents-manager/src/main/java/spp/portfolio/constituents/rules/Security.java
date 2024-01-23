@@ -8,8 +8,5 @@ public interface Security
     
     <T> T getAttributeValue(String attributeKey, Class<T> attributeType);
     
-    default Object getAttributeValue(String attributeKey)
-    {
-        return getAttributeValue(attributeKey, Object.class);
-    }
+    <T> void setAttributeValue(String attributeKey, T attributeValue);
 }

@@ -1,4 +1,4 @@
-package spp.portfolio.constituents.rules.inmemory.dao;
+package spp.portfolio.constituents.util;
 
 import java.util.Arrays;
 
@@ -8,7 +8,7 @@ public class SqlFiles
 {
     public static final String CONSTITUENTS_SQL = "sql/constituents.sql";
     
-    static 
+    public static void load() 
     {
         Arrays.asList(
                 CONSTITUENTS_SQL

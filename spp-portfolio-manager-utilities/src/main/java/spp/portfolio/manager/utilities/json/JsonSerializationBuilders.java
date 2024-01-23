@@ -1,4 +1,4 @@
-package spp.portfolio.model.json;
+package spp.portfolio.manager.utilities.json;
 
 import java.io.IOException;
 

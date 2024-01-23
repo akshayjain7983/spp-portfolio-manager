@@ -7,5 +7,5 @@ import jakarta.persistence.Tuple;
 @FunctionalInterface
 public interface TuplesResultSetExtractor<R>
 {
-    List<R> extractFromTuples(List<Tuple> tuples);
+    R extractFromTuples(List<Tuple> tuples);
 }

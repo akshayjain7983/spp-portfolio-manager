@@ -32,9 +32,6 @@ import jakarta.persistence.TupleElement;
 
 public class SQLHelper
 {
-
-    public static final int SQL_SERVER_MAX_PRECISION = 35;
-
     public static final String IN_CLAUSE_PLACEHOLDER = "[IN[?]]";
     public static final String TABLE_PLACEHOLDER = "[TABLE[?]]";
     public static final String DATABASE_PLACEHOLDER = "[DB[?]]";
@@ -44,11 +41,9 @@ public class SQLHelper
 
     static
     {
-
         sqlTypesForJavaClasses.put(Integer.class, Types.INTEGER);
         sqlTypesForJavaClasses.put(Long.class, Types.BIGINT);
-        sqlTypesForJavaClasses.put(BigDecimal.class, Types.VARCHAR); // SQL Server drivers anyways set BigDecimal as String so we will send String
-                                                                     // from our Helper so as to have more control
+        sqlTypesForJavaClasses.put(BigDecimal.class, Types.NUMERIC);
         sqlTypesForJavaClasses.put(Float.class, Types.REAL);
         sqlTypesForJavaClasses.put(Double.class, Types.DOUBLE);
         sqlTypesForJavaClasses.put(Boolean.class, Types.BIT);
@@ -445,13 +440,12 @@ public class SQLHelper
     public static <T> T extractFromTuple(Tuple tuple, String columnName, Class<T> columnType)
     {
 
-        TupleWrapper tw = TupleWrapper.of(tuple);
-
         if (Objects.isNull(tuple.get(columnName)))
         {
             return null;
         }
 
+        TupleWrapper tw = TupleWrapper.of(tuple);
         T result = null;
         if (Boolean.class.equals(columnType))
         {
@@ -521,6 +515,10 @@ public class SQLHelper
         else if (isConvertibleUsingSpringConversionService(tuple.get(columnName), columnType))
         {
             result = columnType.cast(convertUsingSpringConversionService(tuple.get(columnName), columnType));
+        }
+        else if(Object.class.equals(columnType))
+        {
+            result = columnType.cast(tw.getObject(columnName));
         }
         else if (Objects.nonNull(tuple.get(columnName)))
         {
@@ -617,9 +615,9 @@ public class SQLHelper
                 val = convertToSqlDate(object);
                 break;
             case Types.VARCHAR:
-                if (BigDecimal.class.equals(objectType))
+                if (ZoneId.class.equals(objectType))
                 {
-                    val = ((BigDecimal) object).toPlainString();
+                    val = ((ZoneId) object).toString();
                 }
                 else if (isConvertibleUsingSpringConversionService(object, String.class))
                 {
@@ -638,34 +636,16 @@ public class SQLHelper
         return val;
     }
 
-    public static <T> void setObject(Query ps, int parameterIndex, T object)
+    public static <T> void setObject(Query query, int parameterIndex, T object)
     {
-
         Object val = convertObjectToSqlType(object);
-
-        if (val == null)
-        {
-            ps.setParameter(parameterIndex, null);
-        }
-        else
-        {
-            ps.setParameter(parameterIndex, val);
-        }
+        query.setParameter(parameterIndex, val);
     }
     
     public static <T> void setObject(Query query, String parameterName, T object) 
     {
-
         Object val = convertObjectToSqlType(object);
-
-        if (val == null)
-        {
-            query.setParameter(parameterName, null);
-        }
-        else
-        {
-            query.setParameter(parameterName, val);
-        }
+        query.setParameter(parameterName, val);
     }
 
     public static List<String> extractHeaders(Tuple tuple) 

@@ -12,14 +12,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(staticName = "of")
 public class TupleWrapper
 {
-    private final Tuple rs;
+    private final Tuple tuple;
 
     private <R> R ifNotNull(String name, Function<Tuple, R> valueExtractor)
     {
-        if (rs.get(name) == null)
+        if (tuple.get(name) == null)
             return null;
         else 
-            return valueExtractor.apply(rs);
+            return valueExtractor.apply(tuple);
     }
     
     public Double getDouble(String name)
@@ -80,5 +80,10 @@ public class TupleWrapper
     public Time getTime(String name)
     {
         return ifNotNull(name, tuple->tuple.get(name, Time.class));
+    }
+    
+    public Object getObject(String name)
+    {
+        return ifNotNull(name, tuple->tuple.get(name, Object.class));
     }
 }

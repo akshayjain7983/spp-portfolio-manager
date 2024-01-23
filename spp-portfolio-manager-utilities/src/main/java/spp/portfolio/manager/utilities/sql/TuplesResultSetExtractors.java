@@ -1,57 +1,105 @@
 package spp.portfolio.manager.utilities.sql;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
+import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
 
 public class TuplesResultSetExtractors
 {
-
-    public static <R> TuplesResultSetExtractor<R> tupleMapperResultSetExtractor(TupleMapper<R> tupleMapper)
+    public static <T, R extends Collection<T>> TuplesResultSetExtractor<R> tupleCollectionMapperResultSetExtractor(TupleMapper<T> tupleMapper, Supplier<R> collectionSupplier)
     {
         return tuples ->
         {
-            if (CollectionUtils.isEmpty(tuples))
-                return Collections.emptyList();
-
-            List<R> resultList = new ArrayList<>(tuples.size());
-
-            for (int i = 0; i < tuples.size(); i++)
+            R collection = collectionSupplier.get();
+            
+            if (!CollectionUtils.isEmpty(tuples)) 
             {
-                R val = tupleMapper.mapTuple(tuples.get(i), i);
-                resultList.add(val);
+                Iterator<Tuple> tuplesIterator = tuples.iterator();
+                int rowNum = 0;
+                while(tuplesIterator.hasNext())
+                {
+                    T val = tupleMapper.mapTuple(tuplesIterator.next(), rowNum);
+                    collection.add(val);
+                    rowNum++;
+                }
             }
 
-            return resultList;
+            return collection;
         };
     }
     
-    public static TupleMapper<Map<String, Object>> tupleAttributeMapper()
+    public static <K, V, R extends Map<K, V>> TuplesResultSetExtractor<R> tupleMapMapperResultSetExtractor(TupleMapper<K> tupleKeyMapper, TupleMapper<V> tupleValueMapper, Supplier<R> mapSupplier)
+    {
+        return tuples ->
+        {
+            R map = mapSupplier.get();
+            
+            if (!CollectionUtils.isEmpty(tuples)) 
+            {
+                Iterator<Tuple> tuplesIterator = tuples.iterator();
+                int rowNum = 0;
+                while(tuplesIterator.hasNext())
+                {
+                    K key = tupleKeyMapper.mapTuple(tuplesIterator.next(), rowNum);
+                    V value = tupleValueMapper.mapTuple(tuplesIterator.next(), rowNum);
+                    map.put(key, value);
+                    rowNum++;
+                }
+            }
+
+            return map;
+        };
+    }
+    
+    public static <T> TuplesResultSetExtractor<List<T>> tupleMapperListResultSetExtractor(TupleMapper<T> tupleMapper)
+    {
+        return tupleCollectionMapperResultSetExtractor(tupleMapper, ArrayList::new);
+    }
+    
+    public static <T> TuplesResultSetExtractor<Set<T>> tupleMapperSetResultSetExtractor(TupleMapper<T> tupleMapper)
+    {
+        return tupleCollectionMapperResultSetExtractor(tupleMapper, LinkedHashSet::new);
+    }
+    
+    public static <K, V> TuplesResultSetExtractor<Map<K, V>> tupleMapperMapResultSetExtractor(TupleMapper<K> tupleKeyMapper, TupleMapper<V> tupleValueMapper)
+    {
+        return tupleMapMapperResultSetExtractor(tupleKeyMapper, tupleValueMapper, LinkedHashMap::new);
+    }
+    
+    public static <K, V> TupleMapper<Map<K, Object>> tupleAttributeMapper(Function<TupleElement<?>, K> tupleMapKeyMapper)
     {
         return
                 (tuple, rowNum) ->
                 {
-                    Map<String, Object> attributes = new LinkedHashMap<>();
-                    List<TupleElement<?>> columns = tuple.getElements();
-                    for (TupleElement<?> col : columns)
+                    Map<K, Object> attributes = new LinkedHashMap<>();
+                    
+                    if(Objects.nonNull(tuple))
                     {
-                        Class<?> javaType = col.getJavaType();
-                        String colName = col.getAlias();
-                        Object val = SQLHelper.extractFromTuple(tuple, colName, javaType);
-                        attributes.put(colName, val);
+                        List<TupleElement<?>> columns = tuple.getElements();
+                        for (TupleElement<?> col : columns)
+                        {
+                            Class<?> javaType = col.getJavaType();
+                            String colName = col.getAlias();
+                            Object val = SQLHelper.extractFromTuple(tuple, colName, javaType);
+                            K key = tupleMapKeyMapper.apply(col);
+                            attributes.put(key, val);
+                        }
                     }
+                    
                     return attributes;
                 };
-    }
-
-    public static TuplesResultSetExtractor<Map<String, Object>> tupleAttributeMapperResultSetExtractor()
-    {
-        return tupleMapperResultSetExtractor(tupleAttributeMapper());
     }
 }
