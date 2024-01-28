@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collection;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -17,14 +18,23 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import spp.portfolio.model.definition.PortfolioDefinition;
+import spp.portfolio.model.definition.PortfolioDefinitionConfiguration;
 
 @Data
 @Entity
+@Table(catalog = "spp", schema = "spp", name = "portfolio_rebalance")
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(of = {"id"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PortfolioRebalance
 {
     @Id
@@ -32,11 +42,17 @@ public class PortfolioRebalance
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     private PortfolioDefinition portfolioDefinition;
-    private String rebalanceType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private PortfolioDefinitionConfiguration portfolioDefinitionConfiguration;
+    private PortfolioRebalanceType rebalanceType;
     private LocalDate date;
+    @CreatedDate
+    private Instant createdTimestamp;
+    private String createdBy;
     @LastModifiedDate
     private Instant lastUpdatedTimestamp;
     private String lastUpdatedBy;
+    private Boolean isActive;
     private BigDecimal investmentMarketValue;
     private BigDecimal portfolioCash;
     @OneToMany(mappedBy = "portfolioRebalance", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

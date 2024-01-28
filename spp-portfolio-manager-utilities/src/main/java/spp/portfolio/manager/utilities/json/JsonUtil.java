@@ -24,7 +24,7 @@ public class JsonUtil
         } 
         catch(Exception e)
         {
-            log.warn("Unable to get ObjectMapper from Spring context. Will return default one.", e);
+            log.warn("Unable to get ObjectMapper from Spring context. Will return default one. Default one will be devoid of any customizations applied via Spring.", e);
             return buildObjectMapper();
         }        
     }

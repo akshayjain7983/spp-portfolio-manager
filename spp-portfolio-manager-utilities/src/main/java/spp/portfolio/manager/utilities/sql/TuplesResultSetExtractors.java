@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -79,12 +80,12 @@ public class TuplesResultSetExtractors
         return tupleMapMapperResultSetExtractor(tupleKeyMapper, tupleValueMapper, LinkedHashMap::new);
     }
     
-    public static <K, V> TupleMapper<Map<K, Object>> tupleAttributeMapper(Function<TupleElement<?>, K> tupleMapKeyMapper)
+    public static <K, V> TupleMapper<Map<K, Optional<Object>>> tupleAttributeMapper(Function<TupleElement<?>, K> tupleMapKeyMapper)
     {
         return
                 (tuple, rowNum) ->
                 {
-                    Map<K, Object> attributes = new LinkedHashMap<>();
+                    Map<K, Optional<Object>> attributes = new LinkedHashMap<>();
                     
                     if(Objects.nonNull(tuple))
                     {
@@ -95,7 +96,7 @@ public class TuplesResultSetExtractors
                             String colName = col.getAlias();
                             Object val = SQLHelper.extractFromTuple(tuple, colName, javaType);
                             K key = tupleMapKeyMapper.apply(col);
-                            attributes.put(key, val);
+                            attributes.put(key, Optional.ofNullable(val));
                         }
                     }
                     

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="ERROR" strict="false" monitorInterval="10">
+
+	<Appenders>
+		<Console name="sppConsole" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="[%d] [%p] [%c] [%t] [%F: %L] %m%n" />
+		</Console>
+	</Appenders>
+	<Loggers>
+        <Logger name="spp.portfolio" level="debug" includeLocation="true" additivity="false">
+            <AppenderRef ref="sppConsole"/>
+        </Logger>
+		<Logger name="org.springframework" level="error" includeLocation="true" additivity="false">
+            <AppenderRef ref="sppConsole"/>
+        </Logger>
+        <Logger name="org.springframework.data.jpa" level="error" includeLocation="true" additivity="false">
+            <AppenderRef ref="sppConsole"/>
+        </Logger>
+        <Logger name="org.hibernate" level="error" includeLocation="true" additivity="false">
+            <AppenderRef ref="sppConsole"/>
+        </Logger>
+        <Logger name="org.apache.http" level="error" includeLocation="true" additivity="false">
+            <AppenderRef ref="sppConsole"/>
+        </Logger>
+        <Root level="info" includeLocation="true">
+            <AppenderRef ref="sppConsole"/>
+        </Root>
+	</Loggers>
+</Configuration>

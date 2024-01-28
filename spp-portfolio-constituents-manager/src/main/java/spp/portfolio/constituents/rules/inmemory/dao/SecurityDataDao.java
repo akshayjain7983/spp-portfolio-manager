@@ -8,13 +8,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.apache.commons.collections4.CollectionUtils;
 
-import io.github.funofprograming.context.ApplicationContextKey;
-import io.github.funofprograming.context.ConcurrentApplicationContext;
+import io.github.funofprograming.context.ApplicationContext;
+import io.github.funofprograming.context.Key;
+import io.github.funofprograming.context.KeyType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.Tuple;
@@ -35,22 +38,22 @@ public class SecurityDataDao
     private EntityManager entityManager;
     
     @SuppressWarnings("unchecked")
-    public Collection<Security> loadSecurities(ConcurrentApplicationContext context)
+    public Collection<Security> loadSecurities(ApplicationContext daoContext)
     {
-        LocalDate rebalanceDate = context.fetch(ApplicationContextKey.of("rebalanceDate", LocalDate.class));
-        SecurityType securityType = context.fetch(ApplicationContextKey.of("securityType", SecurityType.class));
-        String exchangeCode = context.fetch(ApplicationContextKey.of("exchangeCode", String.class));
+        LocalDate rebalanceDate = daoContext.fetch(Key.of("rebalanceDate", LocalDate.class));
+        Collection<SecurityType> securityTypes = daoContext.fetch(Key.of("securityTypes", KeyType.<Collection<SecurityType>>of(Collection.class)));
+        Collection<String> exchanges = daoContext.fetch(Key.of("exchanges", KeyType.<Collection<String>>of(Collection.class)));
         
         String sql = SqlQueryHolder.getSql(SqlFiles.CONSTITUENTS_SQL, "loadSecurities");
         Query jpaQuery = entityManager.createNativeQuery(sql, Tuple.class);
         SQLHelper.setObject(jpaQuery, "rebalanceDate", rebalanceDate);
-        SQLHelper.setObject(jpaQuery, "segment", securityType.getSymbol());
-        SQLHelper.setObject(jpaQuery, "exchangeCode", exchangeCode);
+        SQLHelper.setObject(jpaQuery, "segment", securityTypes.stream().map(SecurityType::getSymbol).collect(Collectors.toSet()));
+        SQLHelper.setObject(jpaQuery, "exchange", exchanges);
         List<Tuple> securitiesTuple = jpaQuery.getResultList();
         if(CollectionUtils.isEmpty(securitiesTuple))
             return Collections.emptyList();
         
-        TupleMapper<Map<Attribute<?>, Object>> tupleAttributesMapper = tupleAttributeMapper(te->Attribute.ofName(te.getAlias(), te.getJavaType()));
+        TupleMapper<Map<Attribute<?>, Optional<Object>>> tupleAttributesMapper = tupleAttributeMapper(te->Attribute.ofName(te.getAlias(), te.getJavaType()));
         
         TupleMapper<Security> tupleSecurityMapper = 
                 (tuple, rowNum)->
@@ -58,7 +61,7 @@ public class SecurityDataDao
                     Long id = SQLHelper.extractFromTuple(tuple, "id", Long.class);
                     String segment = SQLHelper.extractFromTuple(tuple, "segment", String.class);
                     SecurityType securityTypeFromDb = SecurityType.getFromSymbol(segment);
-                    Map<Attribute<?>, Object> attributes = tupleAttributesMapper.mapTuple(tuple, rowNum);
+                    Map<Attribute<?>, Optional<Object>> attributes = tupleAttributesMapper.mapTuple(tuple, rowNum);
                     return new SecurityImpl(id, securityTypeFromDb, attributes);
                 };
                 

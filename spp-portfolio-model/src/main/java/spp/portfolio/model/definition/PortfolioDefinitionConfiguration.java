@@ -15,12 +15,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import spp.portfolio.model.definition.configuration.PortfolioConfiguration;
 
 @Data
 @Entity
+@Table(catalog = "spp", schema = "spp", name = "portfolio_definition_configuration")
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(of = {"id", "validFrom", "validTo"})
 public class PortfolioDefinitionConfiguration

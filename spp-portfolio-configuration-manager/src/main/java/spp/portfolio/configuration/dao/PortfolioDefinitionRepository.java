@@ -7,8 +7,10 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import jakarta.transaction.Transactional;
 import spp.portfolio.model.definition.PortfolioDefinition;
 
+@Transactional
 public interface PortfolioDefinitionRepository extends JpaRepository<PortfolioDefinition, Long>
 {
     public Optional<PortfolioDefinition> findByNameAndEffectiveDateIsBeforeAndDiscontinuedDateIsAfterAndPortfolioDefinitionConfigurationsIsActive(String name, LocalDate effectiveDate, LocalDate discontinuedDate, Boolean isActive);

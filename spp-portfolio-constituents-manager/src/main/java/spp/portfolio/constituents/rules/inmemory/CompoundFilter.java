@@ -20,7 +20,7 @@ public class CompoundFilter implements Filter
         Optional<Security> filteredSecurity = security;
         List<Boolean> results = new ArrayList<>();
         
-        for(Filter f : filters)
+        FILTER_LOOP: for(Filter f : filters)
         {
             filteredSecurity = f.execute(filteredSecurity, context);
             
@@ -28,10 +28,14 @@ public class CompoundFilter implements Filter
             {
                 case AND:
                     if(filteredSecurity.isEmpty()) //AND filter failed
-                        break;
+                        break FILTER_LOOP;
+                    break;
+                    
                 case OR:
                     if(filteredSecurity.isPresent()) //OR filter passed
-                        break;
+                        break FILTER_LOOP;
+                    break;
+                    
                 case XOR:
                     if(
                             (filteredSecurity.isPresent() && results.contains(Boolean.FALSE)) //current filter passed but some failure in previous ones so XOR filter pass
@@ -41,16 +45,18 @@ public class CompoundFilter implements Filter
                        )
                     {
                         filteredSecurity = security;
-                        break;
+                        break FILTER_LOOP;
                     }
-                        
+                    break;
+                    
                 case NOT:
                     if(filteredSecurity.isPresent())
                     {
                         filteredSecurity = Optional.empty(); //NOT filter failed
-                        break;
-                    }                         
-                
+                        break FILTER_LOOP;
+                    }        
+                    break;
+                    
                 default:
                     throw new IllegalArgumentException("Unexpected value: " + operator);
             }

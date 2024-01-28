@@ -55,7 +55,7 @@ public class ComparisonExpression implements Expression<Boolean>
         }
         else 
         {
-            return security.map(s->s.getAttributeValue(attribute.getName(), attributeType)).orElse(null);
+            return security.map(s->s.getAttributeValue(attribute.getName(), attributeType).orElse(null)).orElse(null);
         }
     }
 

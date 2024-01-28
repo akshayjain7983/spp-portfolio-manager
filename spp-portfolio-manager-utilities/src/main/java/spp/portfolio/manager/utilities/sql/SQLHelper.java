@@ -571,7 +571,7 @@ public class SQLHelper
     public static int getSqlType(Object object)
     {
 
-        int sqlType = Types.VARCHAR;
+        int sqlType = Types.JAVA_OBJECT;
         if (Objects.nonNull(object))
         {
             Class<?> objectType = object.getClass();
@@ -584,7 +584,7 @@ public class SQLHelper
             {
                 objectTypeToCheckForSqlType = ZoneId.class;
             }
-            sqlType = sqlTypesForJavaClasses.containsKey(objectTypeToCheckForSqlType) ? sqlTypesForJavaClasses.get(objectTypeToCheckForSqlType) : Types.VARCHAR;
+            sqlType = sqlTypesForJavaClasses.containsKey(objectTypeToCheckForSqlType) ? sqlTypesForJavaClasses.get(objectTypeToCheckForSqlType) : Types.JAVA_OBJECT;
         }
 
         return sqlType;

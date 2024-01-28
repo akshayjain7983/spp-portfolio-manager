@@ -1,20 +1,26 @@
 {loadSecurities}
 SELECT 
-s.id 
-, s.exchange_code exchangeCode
+:rebalanceDate as_of
+, s.id 
+, s.exchange_code
 , s.exchange 
-, s.security_name securityName
-, s.exchange_group exchangeGroup 
+, s.security_name
+, s.exchange_group 
 , s.segment 
 , s.status 
-, srd.face_value faceValue 
-, srd.total_outstanding_shares totalOutstandingShares 
-, srd.listing_date listingDate 
-, sic.level_0 level0  
-, sic.level_1 level1
-, sic.level_2 level2
-, sic.level_3 level3
-, sic.level_4 level4
+, srd.face_value 
+, srd.total_outstanding_shares 
+, srd.listing_date 
+, sic.level_0  
+, sic.level_1
+, sic.level_2
+, sic.level_3
+, sic.level_4
+, sp."open" open_price
+, sp.high high_price
+, sp.low low_price
+, sp."close" close_price
+, sp.volume 
 , sid.isin
 , sid.ticker
 FROM spp.securities s 
@@ -26,6 +32,9 @@ LEFT OUTER JOIN spp.security_industry_classification sic
 ON s.id = sic.security_id 
 AND sic.effective_date <= :rebalanceDate
 AND sic.discontinued_date > :rebalanceDate
+LEFT OUTER JOIN spp.security_prices sp 
+ON s.id = sp.security_id
+AND sp."date" = :rebalanceDate
 LEFT OUTER JOIN (
 	SELECT * FROM crosstab('
 		SELECT security_id::int4, identifier_key::varchar, identifier_value::varchar  
@@ -39,8 +48,7 @@ ON s.id = sid.security_id
 WHERE 
 s.status = 'Active'
 AND
-s.segment = :segment
+s.segment IN :segment
 AND 
-CASE WHEN cast(:exchangeCode AS varchar) IS NULL THEN 1=1
-ELSE s.exchange_code = :exchangeCode
-END 
+s.exchange IN :exchange
+AND s.exchange_code = '500086'

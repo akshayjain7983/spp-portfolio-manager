@@ -1,24 +1,15 @@
 package spp.portfolio.model.spring;
 
-import static spp.portfolio.manager.utilities.json.JsonUtil.fromJson;
-import static spp.portfolio.manager.utilities.json.JsonUtil.toJson;
-
-import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import spp.portfolio.manager.utilities.jpa.JsonJpaConverter;
 import spp.portfolio.model.definition.configuration.PortfolioConfiguration;
 
 @Converter(autoApply = true)
-public class PortfolioConfigurationJpaConverter implements AttributeConverter<PortfolioConfiguration, String>
+public class PortfolioConfigurationJpaConverter implements JsonJpaConverter<PortfolioConfiguration>
 {
     @Override
-    public String convertToDatabaseColumn(PortfolioConfiguration attribute)
+    public Class<PortfolioConfiguration> getDataClass()
     {
-        return toJson(attribute);
-    }
-
-    @Override
-    public PortfolioConfiguration convertToEntityAttribute(String dbData)
-    {
-        return fromJson(dbData, PortfolioConfiguration.class);
+        return PortfolioConfiguration.class;
     }
 }

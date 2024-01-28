@@ -15,11 +15,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
+@Table(catalog = "spp", schema = "spp", name = "portfolio_definition")
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(of = {"id", "name", "effectiveDate", "discontinuedDate"})
 public class PortfolioDefinition
