@@ -16,14 +16,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @Table(catalog = "spp", schema = "spp", name = "portfolio_definition")
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(of = {"id", "name", "effectiveDate", "discontinuedDate"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PortfolioDefinition
 {
     @Id

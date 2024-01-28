@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -40,6 +41,7 @@ public class PortfolioRebalance
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private UUID runId;
     @ManyToOne(fetch = FetchType.LAZY)
     private PortfolioDefinition portfolioDefinition;
     @ManyToOne(fetch = FetchType.LAZY)

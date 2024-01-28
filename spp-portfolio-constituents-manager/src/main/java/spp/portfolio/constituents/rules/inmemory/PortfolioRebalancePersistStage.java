@@ -7,26 +7,18 @@ import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConsta
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import io.github.funofprograming.context.ConcurrentApplicationContext;
 import jakarta.transaction.Transactional;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
-import spp.portfolio.constituents.rebalance.PortfolioRebalanceRule;
+import spp.portfolio.constituents.rebalance.PortfolioRebalanceStage;
 import spp.portfolio.constituents.rules.inmemory.dao.PortfolioRebalanceRepository;
 import spp.portfolio.model.rebalance.PortfolioRebalance;
 
-@Component
-public class PortfolioRebalancePersistRule implements PortfolioRebalanceRule
+public class PortfolioRebalancePersistStage implements PortfolioRebalanceStage
 {
     @Autowired
     private PortfolioRebalanceRepository portfolioRebalanceRepository;
-
-    @Override
-    public int getOrder()
-    {
-        return 2;
-    }
 
     @Override
     @Transactional

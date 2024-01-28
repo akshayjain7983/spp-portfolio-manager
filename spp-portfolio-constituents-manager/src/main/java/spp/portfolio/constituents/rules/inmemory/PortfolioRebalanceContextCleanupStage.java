@@ -7,17 +7,11 @@ import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConsta
 
 import io.github.funofprograming.context.ConcurrentApplicationContext;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
-import spp.portfolio.constituents.rebalance.PortfolioRebalanceRule;
+import spp.portfolio.constituents.rebalance.PortfolioRebalanceStage;
 import spp.portfolio.model.rebalance.PortfolioRebalance;
 
-public class PortfolioRebalanceContextCleanupRule implements PortfolioRebalanceRule
+public class PortfolioRebalanceContextCleanupStage implements PortfolioRebalanceStage
 {
-    @Override
-    public int getOrder()
-    {
-        return 3;
-    }
-
     @Override
     public PortfolioRebalance execute(PortfolioRebalanceCommand portfolioRebalanceCommand)
     {

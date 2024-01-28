@@ -7,26 +7,18 @@ import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConsta
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Component;
 
 import io.github.funofprograming.context.ConcurrentApplicationContext;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
-import spp.portfolio.constituents.rebalance.PortfolioRebalanceRule;
+import spp.portfolio.constituents.rebalance.PortfolioRebalanceStage;
 import spp.portfolio.constituents.rules.Security;
 import spp.portfolio.model.rebalance.PortfolioConstituent;
 import spp.portfolio.model.rebalance.PortfolioRebalance;
 
-@Component
-public class PortfolioRebalanceConstituentBuilderRule implements PortfolioRebalanceRule
+public class PortfolioRebalanceConstituentBuilderStage implements PortfolioRebalanceStage
 {
-    @Override
-    public int getOrder()
-    {
-        return 1;
-    }
-
     @Override
     public PortfolioRebalance execute(PortfolioRebalanceCommand portfolioRebalanceCommand)
     {
@@ -58,7 +50,7 @@ public class PortfolioRebalanceConstituentBuilderRule implements PortfolioRebala
         BigDecimal rebalanceInvestmentMarketValue = 
                 portfolioRebalance.getPortfolioConstituents()
                 .stream()
-                .map(c->c.getPrice().multiply(BigDecimal.valueOf(c.getUnits())))
+                .map(c->Optional.ofNullable(c.getPrice()).flatMap(p->Optional.ofNullable(c.getUnits()).map(u->BigDecimal.valueOf(u)).map(u->p.multiply(u))).orElse(BigDecimal.ZERO))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         
         BigDecimal rebalanceCash = configuration.getPortfolioAmountLimit().subtract(rebalanceInvestmentMarketValue);

@@ -15,21 +15,19 @@ import java.time.LocalDate;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import io.github.funofprograming.context.ConcurrentApplicationContext;
 import io.github.funofprograming.context.impl.ConcurrentApplicationContextImpl;
 import spp.portfolio.configuration.expose.PortfolioConfigurationManager;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
-import spp.portfolio.constituents.rebalance.PortfolioRebalanceRule;
+import spp.portfolio.constituents.rebalance.PortfolioRebalanceStage;
 import spp.portfolio.constituents.rules.inmemory.dao.SecurityDataDao;
 import spp.portfolio.model.definition.PortfolioDefinition;
 import spp.portfolio.model.definition.PortfolioDefinitionConfiguration;
 import spp.portfolio.model.exception.SppException;
 import spp.portfolio.model.rebalance.PortfolioRebalance;
 
-@Component
-public class PortfolioRebalanceContextSetupRule implements PortfolioRebalanceRule
+public class PortfolioRebalanceContextSetupStage implements PortfolioRebalanceStage
 {
     @Autowired
     private PortfolioConfigurationManager portfolioConfigurationManager;
@@ -62,6 +60,7 @@ public class PortfolioRebalanceContextSetupRule implements PortfolioRebalanceRul
         PortfolioDefinitionConfiguration portfolioDefinitionConfiguration = context.fetch(portfolioDefinitionConfigurationKey);
         PortfolioRebalance portfolioRebalance = 
                 PortfolioRebalance.builder()
+                .runId(portfolioRebalanceCommand.getRunId())
                 .date(portfolioRebalanceCommand.getDate())
                 .portfolioDefinition(portfolioDefinitionConfiguration.getPortfolioDefinition())
                 .portfolioDefinitionConfiguration(portfolioDefinitionConfiguration)
@@ -69,12 +68,6 @@ public class PortfolioRebalanceContextSetupRule implements PortfolioRebalanceRul
                 .isActive(Boolean.TRUE)
                 .build();
         context.add(portfolioRebalanceKey, portfolioRebalance);
-    }
-
-    @Override
-    public int getOrder()
-    {
-        return 0;
     }
     
     private void setConfiguration(ConcurrentApplicationContext context)

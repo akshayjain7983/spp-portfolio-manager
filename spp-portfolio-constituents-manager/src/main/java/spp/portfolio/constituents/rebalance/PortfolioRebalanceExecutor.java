@@ -1,8 +1,10 @@
 package spp.portfolio.constituents.rebalance;
 
+import java.util.concurrent.CompletableFuture;
+
 import spp.portfolio.model.rebalance.PortfolioRebalance;
 
 public interface PortfolioRebalanceExecutor
 {
-    PortfolioRebalance execute(PortfolioRebalanceCommand portfolioRebalanceCommand);
+    CompletableFuture<PortfolioRebalance> execute(PortfolioRebalanceCommand portfolioRebalanceCommand);
 }

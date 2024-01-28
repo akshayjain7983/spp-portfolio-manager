@@ -2,6 +2,7 @@ package spp.portfolio.constituents.rules.inmemory.dao;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,4 +15,6 @@ import spp.portfolio.model.rebalance.PortfolioRebalanceType;
 public interface PortfolioRebalanceRepository extends JpaRepository<PortfolioRebalance, Long>
 {
     Optional<PortfolioRebalance> findByPortfolioDefinitionAndDateAndRebalanceTypeAndIsActive(PortfolioDefinition portfolioDefinition, LocalDate date, PortfolioRebalanceType rebalanceType, Boolean isActive);
+    
+    Optional<PortfolioRebalance> findByRunId(UUID runId);
 }

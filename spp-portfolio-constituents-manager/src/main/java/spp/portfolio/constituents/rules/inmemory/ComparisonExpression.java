@@ -1,5 +1,7 @@
 package spp.portfolio.constituents.rules.inmemory;
 
+import static spp.portfolio.manager.utilities.json.JsonUtil.fromJson;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,7 +14,6 @@ import java.util.Optional;
 import io.github.funofprograming.context.ConcurrentApplicationContext;
 import lombok.Data;
 import spp.portfolio.constituents.rules.Security;
-import spp.portfolio.manager.utilities.json.JsonUtil;
 
 @Data
 public class ComparisonExpression implements Expression<Boolean>
@@ -51,11 +52,11 @@ public class ComparisonExpression implements Expression<Boolean>
         String literalValue = attribute.getLiteralValue();
         if(Objects.nonNull(literalValue))
         {
-            return JsonUtil.viaJson(literalValue, attributeType);
+            return fromJson(literalValue, attributeType);
         }
         else 
         {
-            return security.map(s->s.getAttributeValue(attribute.getName(), attributeType).orElse(null)).orElse(null);
+            return security.flatMap(s->s.getAttributeValue(attribute.getName(), attributeType)).orElse(null);
         }
     }
 

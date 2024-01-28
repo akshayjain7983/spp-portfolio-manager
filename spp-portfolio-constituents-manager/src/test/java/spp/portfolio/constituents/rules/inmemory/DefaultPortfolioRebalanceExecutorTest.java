@@ -3,6 +3,8 @@ package spp.portfolio.constituents.rules.inmemory;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDate;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import spp.portfolio.configuration.expose.PortfolioConfigurationController;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
+import spp.portfolio.constituents.rebalance.DefaultPortfolioRebalanceExecutor;
 import spp.portfolio.constituents.rules.inmemory.dao.SecurityDataDao;
 import spp.portfolio.constituents.spring.PortfolioConstituentsSpringConfiguration;
 import spp.portfolio.manager.utilities.spring.SpringContextHolder;
@@ -32,17 +35,16 @@ import spp.portfolio.model.spring.PortfolioModelSpringConfiguration;
 @EntityScan(basePackages = {"spp.portfolio"})
 @EnableJpaRepositories(basePackages = {"spp.portfolio"})
 @EnableJpaAuditing
-@ContextConfiguration(classes = {PortfolioRebalanceInMemoryExecutor.class, PortfolioRebalanceContextSetupRule.class, PortfolioRebalanceConstituentBuilderRule.class
-        , PortfolioRebalancePersistRule.class, PortfolioRebalanceContextCleanupRule.class, SecurityDataDao.class, PortfolioConfigurationController.class
+@ContextConfiguration(classes = {DefaultPortfolioRebalanceExecutor.class, SecurityDataDao.class, PortfolioConfigurationController.class
         , PortfolioConfigurationConverter.class, PortfolioModelSpringConfiguration.class, PortfolioConstituentsSpringConfiguration.class
         , SpringContextHolder.class, JacksonAutoConfiguration.class})
-class PortfolioRebalanceInMemoryExecutorTest
+class DefaultPortfolioRebalanceExecutorTest
 {
     @Autowired
-    private PortfolioRebalanceInMemoryExecutor executor;
+    private DefaultPortfolioRebalanceExecutor executor;
 
     @Test
-    void testExecute()
+    void testExecute() throws InterruptedException, ExecutionException
     {
         PortfolioRebalanceCommand command = 
                 PortfolioRebalanceCommand.builder()
@@ -51,7 +53,9 @@ class PortfolioRebalanceInMemoryExecutorTest
                 .portfolioRebalanceType(PortfolioRebalanceType.INDICATIVE)
                 .build();
         
-        PortfolioRebalance rebalance = executor.execute(command);
+        CompletableFuture<PortfolioRebalance> rebalanceFuture = executor.execute(command);
+        while(!rebalanceFuture.isDone());
+        PortfolioRebalance rebalance = rebalanceFuture.get();
         assertNotNull(rebalance);
         assertNotNull(rebalance.getId());
     }
