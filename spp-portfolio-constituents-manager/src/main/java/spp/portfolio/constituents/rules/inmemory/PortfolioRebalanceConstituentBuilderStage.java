@@ -41,6 +41,8 @@ public class PortfolioRebalanceConstituentBuilderStage implements PortfolioRebal
                             .securityId(c.getSecurityId())
                             .price(c.getAttributeValue("rebalance_price", BigDecimal.class).orElse(null))
                             .units(c.getAttributeValue("rebalance_units", Long.class).orElse(null))
+                            .investmentMarketValue(c.getAttributeValue("rebalance_investment_market_value", BigDecimal.class).orElse(null))
+                            .weight(c.getAttributeValue("rebalance_weight", BigDecimal.class).orElse(null))
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -50,7 +52,7 @@ public class PortfolioRebalanceConstituentBuilderStage implements PortfolioRebal
         BigDecimal rebalanceInvestmentMarketValue = 
                 portfolioRebalance.getPortfolioConstituents()
                 .stream()
-                .map(c->Optional.ofNullable(c.getPrice()).flatMap(p->Optional.ofNullable(c.getUnits()).map(u->BigDecimal.valueOf(u)).map(u->p.multiply(u))).orElse(BigDecimal.ZERO))
+                .map(c->Optional.ofNullable(c.getInvestmentMarketValue()).orElse(BigDecimal.ZERO))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         
         BigDecimal rebalanceCash = configuration.getPortfolioAmountLimit().subtract(rebalanceInvestmentMarketValue);

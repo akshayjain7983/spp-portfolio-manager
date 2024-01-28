@@ -40,5 +40,7 @@ public class PortfolioConstituent
     private PortfolioRebalance portfolioRebalance;
     private Long securityId;
     private BigDecimal price;
-    private Long units;   
+    private Long units;
+    private BigDecimal investmentMarketValue;
+    private BigDecimal weight;
 }

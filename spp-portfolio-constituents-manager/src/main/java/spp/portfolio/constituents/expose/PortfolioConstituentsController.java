@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,7 +28,7 @@ public class PortfolioConstituentsController implements PortfolioConstituentsMan
     private PortfolioRebalanceRepository portfolioRebalanceRepository;
     
     @Override
-    @PutMapping("/portfolio-constituents/trigger-rebalance/{portfolioDefinitionId}/{portfolioRebalanceType}")
+    @PostMapping("/portfolio-constituents/{portfolioDefinitionId}/{portfolioRebalanceType}")
     public UUID triggerRebalance(
             @PathVariable Long portfolioDefinitionId
             , @PathVariable PortfolioRebalanceType portfolioRebalanceType
