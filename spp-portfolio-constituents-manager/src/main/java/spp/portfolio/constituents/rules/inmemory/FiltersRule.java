@@ -15,12 +15,6 @@ public class FiltersRule implements PortfolioRule
     private CompoundFilter rootFilter;
 
     @Override
-    public boolean doExecute(ConcurrentApplicationContext context)
-    {
-        return true;
-    }
-    
-    @Override
     public Collection<Security> execute(Collection<Security> securities, ConcurrentApplicationContext context)
     {
         return

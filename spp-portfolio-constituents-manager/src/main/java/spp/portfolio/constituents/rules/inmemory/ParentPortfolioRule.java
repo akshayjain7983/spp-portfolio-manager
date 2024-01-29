@@ -13,12 +13,6 @@ public class ParentPortfolioRule implements PortfolioRule
     private Long parentPortfolioId;
 
     @Override
-    public boolean doExecute(ConcurrentApplicationContext context)
-    {
-        return true;
-    }
-    
-    @Override
     public Collection<Security> execute(Collection<Security> securities, ConcurrentApplicationContext context)
     {
         Collection<Security> securitiesFromParent = new ArrayList<>();

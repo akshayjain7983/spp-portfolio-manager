@@ -10,7 +10,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 @JsonSubTypes({
     @Type(name = "SourceDataRule", value = SourceDataRule.class),
     @Type(name = "ParentPortfolioRule", value = ParentPortfolioRule.class),
-    @Type(name = "FiltersRule", value = FiltersRule.class)
+    @Type(name = "FiltersRule", value = FiltersRule.class),
+    @Type(name = "LoopPortfolioRule", value = LoopPortfolioRule.class),
+    @Type(name = "WeightCalculationRule", value = WeightCalculationRule.class)
 })
 public interface PortfolioRule
 {
