@@ -1,17 +1,20 @@
 package spp.portfolio.constituents.rules.inmemory;
 
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.findPortfolioAmountLimit;
+
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
+import io.github.funofprograming.context.ConcurrentApplicationContext;
 import spp.portfolio.constituents.rules.Security;
 
-public class SecurityMarketValueWeightCalculator implements SecurityWeightCalculator
+public class MarketValueSecurityWeightCalculator implements SecurityWeightCalculator
 {
     @Override
-    public Collection<Security> setupWeights(Collection<Security> securities)
+    public Collection<Security> setupWeights(Collection<Security> securities, ConcurrentApplicationContext context)
     {
         setupMarketValue(securities);
         
@@ -22,6 +25,10 @@ public class SecurityMarketValueWeightCalculator implements SecurityWeightCalcul
                 .map(s->s.getAttributeValue("market_value", BigDecimal.class).orElse(null))
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        BigDecimal portfolioAmountLimit = findPortfolioAmountLimit.apply(context);
+        BigDecimal deemedCash = portfolioAmountLimit.subtract(marketValueTotal);
+        marketValueTotal = BigDecimal.ZERO.compareTo(deemedCash) < 0 ? marketValueTotal.add(deemedCash) : marketValueTotal;
         
         setupMarketValueWeight(securities, marketValueTotal);
         

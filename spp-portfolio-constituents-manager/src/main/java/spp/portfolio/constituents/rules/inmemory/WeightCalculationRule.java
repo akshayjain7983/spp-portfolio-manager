@@ -21,7 +21,7 @@ public class WeightCalculationRule implements PortfolioRule
         Collection<Security> securitiesWeighted = securities;
         for(SecurityWeightCalculator weightCalculator: securityWeightCalculators)
         {
-            securitiesWeighted = weightCalculator.setupWeights(securitiesWeighted);
+            securitiesWeighted = weightCalculator.setupWeights(securitiesWeighted, context);
         }
         
         Optional.ofNullable(securitiesWeighted)

@@ -13,9 +13,9 @@ import spp.portfolio.constituents.rules.Security;
 
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "type")
 @JsonSubTypes({
-    @Type(name = "MarketValueSecurityWeightCalculator", value = MarketValueSecurityWeightCalculator.class)
+    @Type(name = "MarketValueSecurityWeightCapper", value = MarketValueSecurityWeightCapper.class)
 })
-public interface SecurityWeightCalculator
+public interface SecurityWeightCapper
 {
-    Collection<Security> setupWeights(Collection<Security> securities, ConcurrentApplicationContext context);
+    Collection<Security> capWeights(Collection<Security> securities, ConcurrentApplicationContext context);
 }

@@ -8,8 +8,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "type")
 @JsonSubTypes({
-    @Type(name = "MarketValueSecurityWeightCalculator", value = MarketValueSecurityWeightCalculator.class)
+    @Type(name = "ProRataWeightCappingStrategy", value = ProRataWeightCappingStrategy.class)
 })
-public interface SecurityWeightCalculator
+public interface WeightCappingStrategy
 {
+
 }

@@ -1,5 +1,6 @@
 package spp.portfolio.constituents.util;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentMap;
@@ -35,4 +36,6 @@ public class PortfolioConstituentsManagerConstants
     public static final BiFunction<String, ConcurrentApplicationContext, Boolean> isLoopInnermost = (loopLabel, context) -> StringUtils.equals(loopLabel, Optional.ofNullable(context.fetch(loopRuleStatesKey).peek()).map(ls->ls.loopLabel()).orElse(null));
     public static final Function<ConcurrentApplicationContext, Boolean> isInsideALoop = context -> Optional.ofNullable(context.fetch(loopRuleStatesKey)).map(s->!s.isEmpty()).orElse(Boolean.FALSE);
     public static final Consumer<ConcurrentApplicationContext> breakLoop = context -> Optional.of(isInsideALoop.apply(context)).filter(Boolean::booleanValue).ifPresent(b->context.fetch(loopRuleStatesKey).pop());
+    public static final Function<ConcurrentApplicationContext, Boolean> isInnermostLoopIterationExhausted = context -> Optional.ofNullable(context.fetch(loopRuleStatesKey)).map(s->s.peek()).map(ls->ls.maxIterations().intValue() == ls.currentIteration().get()).orElse(Boolean.FALSE);
+    public static final Function<ConcurrentApplicationContext, BigDecimal> findPortfolioAmountLimit = context -> context.fetch(portfolioConfigurationKey).getPortfolioAmountLimit();
 }
