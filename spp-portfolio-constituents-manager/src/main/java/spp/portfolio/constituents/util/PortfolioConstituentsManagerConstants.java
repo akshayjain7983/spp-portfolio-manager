@@ -1,10 +1,15 @@
 package spp.portfolio.constituents.util;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -16,6 +21,7 @@ import io.github.funofprograming.context.KeyType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
+import spp.portfolio.constituents.rules.Security;
 import spp.portfolio.constituents.rules.inmemory.LoopPortfolioRule;
 import spp.portfolio.constituents.rules.inmemory.PortfolioConfiguration;
 import spp.portfolio.constituents.rules.inmemory.dao.SecurityDataDao;
@@ -38,4 +44,7 @@ public class PortfolioConstituentsManagerConstants
     public static final Consumer<ConcurrentApplicationContext> breakLoop = context -> Optional.of(isInsideALoop.apply(context)).filter(Boolean::booleanValue).ifPresent(b->context.fetch(loopRuleStatesKey).pop());
     public static final Function<ConcurrentApplicationContext, Boolean> isInnermostLoopIterationExhausted = context -> Optional.ofNullable(context.fetch(loopRuleStatesKey)).map(s->s.peek()).map(ls->ls.maxIterations().intValue() == ls.currentIteration().get()).orElse(Boolean.FALSE);
     public static final Function<ConcurrentApplicationContext, BigDecimal> findPortfolioAmountLimit = context -> context.fetch(portfolioConfigurationKey).getPortfolioAmountLimit();
+    public static final BiFunction<Collection<Security>, String, BigDecimal> findSumOfSecurityAttribute = (securities, attr) -> Optional.ofNullable(securities).orElse(Collections.emptyList()).stream().map(s->s.getAttributeValue(attr, BigDecimal.class).orElse(null)).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);;
+    public static final int bigDecimalScale = 64;
+    public static final BinaryOperator<BigDecimal> safeDivide = (dividend, divisor) -> Optional.of(BigDecimal.ZERO).filter(z->z.compareTo(divisor)!=0).map(z->dividend.divide(divisor, bigDecimalScale, RoundingMode.HALF_UP)).orElse(BigDecimal.ZERO);
 }

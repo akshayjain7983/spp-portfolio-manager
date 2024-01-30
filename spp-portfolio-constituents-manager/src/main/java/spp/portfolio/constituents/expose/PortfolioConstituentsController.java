@@ -15,6 +15,7 @@ import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceExecutor;
 import spp.portfolio.constituents.rules.inmemory.dao.PortfolioRebalanceRepository;
 import spp.portfolio.model.definition.PortfolioDefinition;
+import spp.portfolio.model.definition.PortfolioDefinitionConfiguration;
 import spp.portfolio.model.rebalance.PortfolioRebalance;
 import spp.portfolio.model.rebalance.PortfolioRebalanceType;
 
@@ -51,7 +52,8 @@ public class PortfolioConstituentsController implements PortfolioConstituentsMan
     @GetMapping("/portfolio-constituents/{runId}")
     public Optional<PortfolioRebalance> getRebalance(@PathVariable UUID runId)
     {
-        return portfolioRebalanceRepository.findByRunId(runId);
+        Optional<PortfolioRebalance> rebalance = portfolioRebalanceRepository.findByRunId(runId);
+        return sanitizeRebalance(rebalance);
     }
     
     @Override
@@ -61,7 +63,22 @@ public class PortfolioConstituentsController implements PortfolioConstituentsMan
             , @PathVariable PortfolioRebalanceType portfolioRebalanceType
             , @RequestParam LocalDate rebalanceDate)
     {
-        return portfolioRebalanceRepository.findByPortfolioDefinitionAndDateAndRebalanceTypeAndIsActive(PortfolioDefinition.builder().id(portfolioDefinitionId).build(), rebalanceDate, portfolioRebalanceType, Boolean.TRUE);
+        Optional<PortfolioRebalance> rebalance = portfolioRebalanceRepository.findByPortfolioDefinitionAndDateAndRebalanceTypeAndIsActive(PortfolioDefinition.builder().id(portfolioDefinitionId).build(), rebalanceDate, portfolioRebalanceType, Boolean.TRUE); 
+        return sanitizeRebalance(rebalance);
+    }
+    
+    private Optional<PortfolioRebalance> sanitizeRebalance(Optional<PortfolioRebalance> rebalance)
+    {
+        return rebalance.map(r->{
+            
+            //need only portfolio definition id
+            r.setPortfolioDefinition(PortfolioDefinition.builder().id(r.getPortfolioDefinition().getId()).build());
+            
+          //need only portfolio definition configuration id
+            r.setPortfolioDefinitionConfiguration(PortfolioDefinitionConfiguration.builder().id(r.getPortfolioDefinitionConfiguration().getId()).build());
+            
+            return r;
+        });
     }
     
 }

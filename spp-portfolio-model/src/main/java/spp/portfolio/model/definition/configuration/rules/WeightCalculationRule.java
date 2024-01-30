@@ -8,5 +8,5 @@ import lombok.Data;
 public class WeightCalculationRule implements PortfolioRule
 {
     private Collection<SecurityWeightCalculator> securityWeightCalculators;
-    private Attribute<?> rebalanceWeight;
+    private String rebalanceWeightAttributeName;
 }

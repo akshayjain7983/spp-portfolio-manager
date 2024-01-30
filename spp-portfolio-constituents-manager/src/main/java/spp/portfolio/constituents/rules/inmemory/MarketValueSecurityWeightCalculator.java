@@ -1,11 +1,12 @@
 package spp.portfolio.constituents.rules.inmemory;
 
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.findPortfolioAmountLimit;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.findSumOfSecurityAttribute;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.safeDivide;
 
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Optional;
 
 import io.github.funofprograming.context.ConcurrentApplicationContext;
@@ -17,15 +18,7 @@ public class MarketValueSecurityWeightCalculator implements SecurityWeightCalcul
     public Collection<Security> setupWeights(Collection<Security> securities, ConcurrentApplicationContext context)
     {
         setupMarketValue(securities);
-        
-        BigDecimal marketValueTotal = 
-                Optional.ofNullable(securities)
-                .orElse(Collections.emptyList())
-                .parallelStream()
-                .map(s->s.getAttributeValue("market_value", BigDecimal.class).orElse(null))
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        
+        BigDecimal marketValueTotal = findSumOfSecurityAttribute.apply(securities, "market_value");        
         BigDecimal portfolioAmountLimit = findPortfolioAmountLimit.apply(context);
         BigDecimal deemedCash = portfolioAmountLimit.subtract(marketValueTotal);
         marketValueTotal = BigDecimal.ZERO.compareTo(deemedCash) < 0 ? marketValueTotal.add(deemedCash) : marketValueTotal;
@@ -45,7 +38,7 @@ public class MarketValueSecurityWeightCalculator implements SecurityWeightCalcul
         .parallelStream()
         .forEach(security->{
             Optional<BigDecimal> marketValue = security.getAttributeValue("market_value", BigDecimal.class);
-            Optional<BigDecimal> marketValueWeight = marketValue.map(mv->mv.divide(marketValueTotal));
+            Optional<BigDecimal> marketValueWeight = marketValue.map(mv->safeDivide.apply(mv, marketValueTotal));
             security.setAttributeValue("market_value_weight", marketValueWeight);
         });
     }

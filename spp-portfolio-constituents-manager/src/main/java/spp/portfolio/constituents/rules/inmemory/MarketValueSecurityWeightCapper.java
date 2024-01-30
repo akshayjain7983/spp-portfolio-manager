@@ -1,6 +1,10 @@
 package spp.portfolio.constituents.rules.inmemory;
 
-import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.*;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.breakLoop;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.findPortfolioAmountLimit;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.findSumOfSecurityAttribute;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.isInnermostLoopIterationExhausted;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.safeDivide;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -27,6 +31,7 @@ public class MarketValueSecurityWeightCapper implements SecurityWeightCapper
     {
         boolean weightCappingRun = false;
         BigDecimal portfolioAmountLimit = findPortfolioAmountLimit.apply(context);
+        BigDecimal marketValueTotal = findSumOfSecurityAttribute.apply(securities, "market_value");
         for(String groupAttribute:capWeightsByGroup.keySet())
         {
             BigDecimal groupWeightCap = capWeightsByGroup.get(groupAttribute);
@@ -35,23 +40,18 @@ public class MarketValueSecurityWeightCapper implements SecurityWeightCapper
             for(Object groupVal:securitiesGrouped.keySet())
             {
                 Collection<Security> groupedSecurities = securitiesGrouped.get(groupVal);
-                BigDecimal weightOfGroup = 
-                        Optional.ofNullable(groupedSecurities)
-                        .orElse(Collections.emptyList())
-                        .stream()
-                        .map(s->s.getAttributeValue("market_value_weight", BigDecimal.class).orElse(BigDecimal.ZERO))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal weightOfGroup = findSumOfSecurityAttribute.apply(groupedSecurities, "market_value_weight");       
                 
-                if(weightOfGroup.compareTo(groupWeightCap)>0)
+                if(weightOfGroup.compareTo(groupWeightCap) > 0 || marketValueTotal.compareTo(portfolioAmountLimit) > 0)
                 {
                     weightCappingRun = true;
-                    Map<Long, BigDecimal> existingDistributionMarketValue = securities.stream().collect(Collectors.toMap(s->s.getSecurityId(), s->s.getAttributeValue("market_value", BigDecimal.class).orElse(BigDecimal.ZERO)));
+                    Map<Long, BigDecimal> existingDistributionMarketValue = groupedSecurities.stream().collect(Collectors.toMap(s->s.getSecurityId(), s->s.getAttributeValue("market_value", BigDecimal.class).orElse(BigDecimal.ZERO)));
                     BigDecimal groupPortfolioAmountLimit = portfolioAmountLimit.multiply(groupWeightCap);
                     Map<Long, BigDecimal> cappedDistributionMarketValue = weightCappingStrategy.capWeights(existingDistributionMarketValue, groupPortfolioAmountLimit);
-                    securities.stream().forEach(s->{
+                    groupedSecurities.stream().forEach(s->{
                         Optional<BigDecimal> cappedMv = Optional.ofNullable(cappedDistributionMarketValue.get(s.getSecurityId()));
                         Optional<BigDecimal> rebalancePrice = s.getAttributeValue("rebalance_price", BigDecimal.class);
-                        Optional<Long> rebalanceUnits = cappedMv.flatMap(cmv->rebalancePrice.map(p->cmv.divide(p).longValue()));
+                        Optional<Long> rebalanceUnits = cappedMv.flatMap(cmv->rebalancePrice.map(p->safeDivide.apply(cmv, p).longValue()));
                         s.setAttributeValue("rebalance_units", rebalanceUnits);
                     });
                 }

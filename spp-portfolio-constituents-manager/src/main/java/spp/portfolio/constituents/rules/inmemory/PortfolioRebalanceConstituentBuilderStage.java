@@ -41,7 +41,7 @@ public class PortfolioRebalanceConstituentBuilderStage implements PortfolioRebal
                             .securityId(c.getSecurityId())
                             .price(c.getAttributeValue("rebalance_price", BigDecimal.class).orElse(null))
                             .units(c.getAttributeValue("rebalance_units", Long.class).orElse(null))
-                            .investmentMarketValue(c.getAttributeValue("rebalance_investment_market_value", BigDecimal.class).orElse(null))
+                            .investmentMarketValue(c.getAttributeValue("market_value", BigDecimal.class).orElse(null))
                             .weight(c.getAttributeValue("rebalance_weight", BigDecimal.class).orElse(null))
                             .build();
                 })

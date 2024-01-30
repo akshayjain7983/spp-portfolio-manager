@@ -13,7 +13,7 @@ import spp.portfolio.constituents.rules.Security;
 public class WeightCalculationRule implements PortfolioRule
 {
     private Collection<SecurityWeightCalculator> securityWeightCalculators;
-    private Attribute<?> rebalanceWeight;
+    private String rebalanceWeightAttributeName;
     
     @Override
     public Collection<Security> execute(Collection<Security> securities, ConcurrentApplicationContext context)
@@ -28,7 +28,6 @@ public class WeightCalculationRule implements PortfolioRule
         .orElse(Collections.emptyList())
         .parallelStream()
         .forEach(security->{
-            String rebalanceWeightAttributeName = rebalanceWeight.getName();
             Optional<BigDecimal> calculatedWeight = security.getAttributeValue(rebalanceWeightAttributeName, BigDecimal.class);
             security.setAttributeValue("rebalance_weight", calculatedWeight);
         });

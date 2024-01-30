@@ -16,8 +16,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import spp.portfolio.model.definition.configuration.PortfolioConfiguration;
 
 @Data
@@ -25,6 +28,9 @@ import spp.portfolio.model.definition.configuration.PortfolioConfiguration;
 @Table(catalog = "spp", schema = "spp", name = "portfolio_definition_configuration")
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(of = {"id", "validFrom", "validTo"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PortfolioDefinitionConfiguration
 {
     @Id

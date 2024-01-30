@@ -14,7 +14,7 @@ public class DefaultPortfolioRebalanceExecutor implements PortfolioRebalanceExec
 {
     @Autowired
     @Qualifier("standardPortfolioRebalance")
-    private CompositePortfolioRebalanceStage standardPortfolioRebalance;
+    private PortfolioRebalanceStage standardPortfolioRebalance;
     
     @Override
     @Async("portfolioRebalanceTaskExecutor")

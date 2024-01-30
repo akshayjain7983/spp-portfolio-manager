@@ -1,5 +1,7 @@
 package spp.portfolio.constituents.rules.inmemory;
 
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.safeDivide;
+
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,6 +16,6 @@ public class ProRataWeightCappingStrategy implements WeightCappingStrategy
         return
                 existingDistribution.entrySet()
                 .stream()
-                .collect(Collectors.toMap(Entry::getKey, e->e.getValue().divide(existingTotalDistribution).multiply(targetTotalDistribution)));
+                .collect(Collectors.toMap(Entry::getKey, e->safeDivide.apply(e.getValue(), existingTotalDistribution).multiply(targetTotalDistribution)));
     }
 }

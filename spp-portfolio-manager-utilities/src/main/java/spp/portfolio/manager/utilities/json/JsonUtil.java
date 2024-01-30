@@ -1,5 +1,6 @@
 package spp.portfolio.manager.utilities.json;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -42,6 +43,7 @@ public class JsonUtil
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)
                 .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
+                .serializationInclusion(Include.NON_NULL)
                 .build();
     }
     
