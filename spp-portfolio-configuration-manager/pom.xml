@@ -13,7 +13,6 @@
 		<dependency>
 			<groupId>spp</groupId>
 			<artifactId>spp-portfolio-model</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
