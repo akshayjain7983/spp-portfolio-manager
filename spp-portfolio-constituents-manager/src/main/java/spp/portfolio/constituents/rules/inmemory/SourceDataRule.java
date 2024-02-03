@@ -1,10 +1,13 @@
 package spp.portfolio.constituents.rules.inmemory;
 
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.*;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.securityDataDaoSupplier;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import io.github.funofprograming.context.ApplicationContext;
 import io.github.funofprograming.context.ConcurrentApplicationContext;
@@ -20,21 +23,20 @@ import spp.portfolio.constituents.rules.inmemory.dao.SecurityDataDao;
 @Data
 public class SourceDataRule implements PortfolioRule
 {
-    private Collection<String> exchanges;
-    private Collection<SecurityType> securityTypes;
-
     @Override
     public Collection<Security> execute(Collection<Security> securities, ConcurrentApplicationContext context)
     {
         Collection<Security> securitiesFromSource = new ArrayList<>();
         PortfolioRebalanceCommand command = context.fetch(portfolioRebalanceCommandKey);
-        SecurityDataDao securityDataDao = context.fetch(securityDataDaoKey);
+        PortfolioConfiguration portfolioConfiguration = context.fetch(portfolioConfigurationKey);
+        Map<String, Collection<SecurityType>> exchangesWithSecurityTypes = portfolioConfiguration.getExchangesWithSecurityTypes();
+        SecurityDataDao securityDataDao = securityDataDaoSupplier.get();
         ApplicationContext daoContext = new ApplicationContextImpl("SecurityDataDao");
         daoContext.add(Key.of("rebalanceDate", LocalDate.class), command.getDate());
-        daoContext.add(Key.of("securityTypes", KeyType.<Collection<SecurityType>>of(Collection.class)), securityTypes);
-        daoContext.add(Key.of("exchanges", KeyType.<Collection<String>>of(Collection.class)), exchanges);
+        daoContext.add(Key.of("exchangesWithSecurityTypes", KeyType.<Map<String, Collection<SecurityType>>>of(Map.class)), exchangesWithSecurityTypes);
         securitiesFromSource = securityDataDao.loadSecurities(daoContext);
         securitiesFromSource = updateDerivedData(securitiesFromSource, context);
+        context.add(securitiesUniverseKey, List.copyOf(securitiesFromSource));
         return securitiesFromSource;
     }
 

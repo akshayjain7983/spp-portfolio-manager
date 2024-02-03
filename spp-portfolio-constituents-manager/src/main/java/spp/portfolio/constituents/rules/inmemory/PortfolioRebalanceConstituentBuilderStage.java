@@ -3,6 +3,7 @@ package spp.portfolio.constituents.rules.inmemory;
 import static io.github.funofprograming.context.impl.ApplicationContextHolder.getGlobalContext;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioConfigurationKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceKey;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceTransactionsKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.rebalanceContextNameBuilder;
 
 import java.math.BigDecimal;
@@ -16,6 +17,7 @@ import spp.portfolio.constituents.rebalance.PortfolioRebalanceStage;
 import spp.portfolio.constituents.rules.Security;
 import spp.portfolio.model.rebalance.PortfolioConstituent;
 import spp.portfolio.model.rebalance.PortfolioRebalance;
+import spp.portfolio.model.rebalance.PortfolioRebalanceTransaction;
 
 public class PortfolioRebalanceConstituentBuilderStage implements PortfolioRebalanceStage
 {
@@ -26,11 +28,11 @@ public class PortfolioRebalanceConstituentBuilderStage implements PortfolioRebal
         PortfolioConfiguration configuration = context.fetch(portfolioConfigurationKey);
         Collection<Security> constituents = configuration.getPortfolioConfigurationConstituents().execute(context);
         PortfolioRebalance portfolioRebalance = context.fetch(portfolioRebalanceKey);
-        setupPortfolioRebalance(portfolioRebalance, configuration, constituents);
+        setupPortfolioRebalance(portfolioRebalance, configuration, constituents, context);
         return portfolioRebalance;
     }
 
-    private void setupPortfolioRebalance(PortfolioRebalance portfolioRebalance, PortfolioConfiguration configuration, Collection<Security> constituents)
+    private void setupPortfolioRebalance(PortfolioRebalance portfolioRebalance, PortfolioConfiguration configuration, Collection<Security> constituents, ConcurrentApplicationContext context)
     {
         Collection<PortfolioConstituent> portfolioConstituents = 
                 constituents.stream()
@@ -48,6 +50,9 @@ public class PortfolioRebalanceConstituentBuilderStage implements PortfolioRebal
                 .collect(Collectors.toList());
         
         portfolioRebalance.setPortfolioConstituents(portfolioConstituents);
+        
+        Collection<PortfolioRebalanceTransaction> portfolioRebalanceTransactions = context.fetch(portfolioRebalanceTransactionsKey);
+        portfolioRebalance.setPortfolioRebalanceTransactions(portfolioRebalanceTransactions);
         
         BigDecimal rebalanceInvestmentMarketValue = 
                 portfolioRebalance.getPortfolioConstituents()

@@ -16,5 +16,5 @@ public interface PortfolioRebalanceRepository extends JpaRepository<PortfolioReb
 {
     Optional<PortfolioRebalance> findByPortfolioDefinitionAndDateAndRebalanceTypeAndIsActive(PortfolioDefinition portfolioDefinition, LocalDate date, PortfolioRebalanceType rebalanceType, Boolean isActive);
     
-    Optional<PortfolioRebalance> findByRunId(UUID runId);
+    Optional<PortfolioRebalance> findByRunIdAndIsActive(UUID runId, Boolean isActive);
 }

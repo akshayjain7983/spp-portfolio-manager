@@ -20,7 +20,6 @@ public class DefaultPortfolioRebalanceExecutor implements PortfolioRebalanceExec
     @Async("portfolioRebalanceTaskExecutor")
     public CompletableFuture<PortfolioRebalance> execute(PortfolioRebalanceCommand portfolioRebalanceCommand)
     {
-        
         PortfolioRebalance portfolioRebalance = null;
         
         //In future we might want to implement different combination of stages and make that as a configurable methodology in portfolio definition

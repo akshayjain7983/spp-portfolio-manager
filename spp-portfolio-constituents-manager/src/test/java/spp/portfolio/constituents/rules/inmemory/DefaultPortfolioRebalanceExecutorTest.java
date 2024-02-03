@@ -52,7 +52,7 @@ class DefaultPortfolioRebalanceExecutorTest
                 PortfolioRebalanceCommand.builder()
                 .runId(UUID.randomUUID())
                 .portfolioDefinitionId(30L)
-                .date(LocalDate.of(2023, 1, 31))
+                .date(LocalDate.of(2023, 2, 1))
                 .portfolioRebalanceType(PortfolioRebalanceType.INDICATIVE)
                 .build();
         

@@ -9,13 +9,13 @@ import spp.portfolio.model.marketdata.Holiday;
 
 public interface HolidayRepository extends ReadOnlyJpaRepository<Holiday, Long>
 {
-    Optional<Holiday> searchByExchangeAndSegmentAndDate(String exchange, String segment, LocalDate date);
+    Optional<Holiday> searchByExchangeIgnoreCaseAndSegmentIgnoreCaseAndDate(String exchange, String segment, LocalDate date);
 
     NavigableSet<Holiday> searchByExchangeAndSegmentAndDateBetween(String exchange, String segment, LocalDate fromDate, LocalDate toDate);
     
     default boolean isHoliday(String exchange, String segment, LocalDate date)
     {
-        return searchByExchangeAndSegmentAndDate(exchange, segment, date).isPresent();
+        return searchByExchangeIgnoreCaseAndSegmentIgnoreCaseAndDate(exchange, segment, date).isPresent();
     }
     
     default LocalDate findNextBusinessDate(String exchange, String segment, LocalDate currentDate)

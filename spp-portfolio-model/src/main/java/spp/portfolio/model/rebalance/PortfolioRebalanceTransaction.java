@@ -2,12 +2,9 @@ package spp.portfolio.model.rebalance;
 
 import java.math.BigDecimal;
 
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,25 +19,22 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@Table(catalog = "spp", schema = "spp", name = "portfolio_rebalance_constituents")
-@EntityListeners(AuditingEntityListener.class)
+@Table(catalog = "spp", schema = "spp", name = "portfolio_rebalance_transactions")
 @EqualsAndHashCode(of = {"id"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PortfolioConstituent
+public class PortfolioRebalanceTransaction
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "portfolio_rebalance_id", nullable = false)
     private PortfolioRebalance portfolioRebalance;
     private Long securityId;
+    private PortfolioRebalanceTransactionType transactionType;
     private BigDecimal price;
     private Long units;
-    private BigDecimal investmentMarketValue;
-    private BigDecimal weight;
 }

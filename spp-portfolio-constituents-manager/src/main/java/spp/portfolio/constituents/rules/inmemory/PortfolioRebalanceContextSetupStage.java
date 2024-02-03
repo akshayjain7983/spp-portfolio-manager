@@ -2,39 +2,26 @@ package spp.portfolio.constituents.rules.inmemory;
 
 import static io.github.funofprograming.context.impl.ApplicationContextHolder.getGlobalContext;
 import static io.github.funofprograming.context.impl.ApplicationContextHolder.setGlobalContext;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.findPortfolioDefinitionConfiguration;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioConfigurationKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioDefinitionConfigurationKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceCommandKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.rebalanceContextNameBuilder;
-import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.securityDataDaoKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.securityOutpointMapKey;
 import static spp.portfolio.manager.utilities.json.JsonUtil.viaJson;
 
-import java.time.LocalDate;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import io.github.funofprograming.context.ConcurrentApplicationContext;
 import io.github.funofprograming.context.impl.ConcurrentApplicationContextImpl;
-import spp.portfolio.configuration.expose.PortfolioConfigurationManager;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceStage;
-import spp.portfolio.constituents.rules.inmemory.dao.SecurityDataDao;
-import spp.portfolio.model.definition.PortfolioDefinition;
 import spp.portfolio.model.definition.PortfolioDefinitionConfiguration;
-import spp.portfolio.model.exception.SppException;
 import spp.portfolio.model.rebalance.PortfolioRebalance;
 
 public class PortfolioRebalanceContextSetupStage implements PortfolioRebalanceStage
 {
-    @Autowired
-    private PortfolioConfigurationManager portfolioConfigurationManager;
-    
-    @Autowired
-    private SecurityDataDao securityDataDao;
-    
     @Override
     public PortfolioRebalance execute(PortfolioRebalanceCommand portfolioRebalanceCommand)
     {
@@ -42,7 +29,6 @@ public class PortfolioRebalanceContextSetupStage implements PortfolioRebalanceSt
         ConcurrentApplicationContext context = (ConcurrentApplicationContext) getGlobalContext(rebalanceContextNameBuilder.apply(portfolioRebalanceCommand));
         context.add(portfolioRebalanceCommandKey, portfolioRebalanceCommand);
         setPortfolioDefinition(context, portfolioRebalanceCommand);
-        setDaos(context);
         setConfiguration(context);
         setPortfolioRebalance(context);
         setSecurityOutpointMap(context);
@@ -77,26 +63,9 @@ public class PortfolioRebalanceContextSetupStage implements PortfolioRebalanceSt
         context.add(portfolioConfigurationKey, configuration);
     }
 
-    private void setDaos(ConcurrentApplicationContext context)
-    {
-        context.add(securityDataDaoKey, securityDataDao);
-    }
-
     private void setPortfolioDefinition(ConcurrentApplicationContext context, PortfolioRebalanceCommand portfolioRebalanceCommand)
     {
-        PortfolioDefinition portfolioDefinition = portfolioConfigurationManager.getPortfolioDefinition(portfolioRebalanceCommand.getPortfolioDefinitionId()).orElseThrow(()->new SppException("Invalid portfolio definition id. No portfolio definition found"));
-        LocalDate rebalanceDate = portfolioRebalanceCommand.getDate();
-        if(rebalanceDate.isBefore(portfolioDefinition.getEffectiveDate()) || !rebalanceDate.isBefore(portfolioDefinition.getDiscontinuedDate()))
-            throw new SppException("Portfolio definition is not effective on rebalance date");
-        
-        PortfolioDefinitionConfiguration portfolioDefinitionConfiguration =
-                portfolioDefinition.getPortfolioDefinitionConfigurations()
-                .stream()
-                .filter(pdc->rebalanceDate.isAfter(pdc.getValidFrom()) || (pdc.getValidFrom().isEqual(portfolioDefinition.getEffectiveDate()) && pdc.getValidFrom().isEqual(rebalanceDate)))
-                .filter(pdc->!rebalanceDate.isAfter(pdc.getValidTo()))
-                .findFirst()
-                .orElseThrow(()->new SppException("Portfolio definition does not have valid configuration for rebalance date"));
-        
+        PortfolioDefinitionConfiguration portfolioDefinitionConfiguration = findPortfolioDefinitionConfiguration.apply(portfolioRebalanceCommand);        
         context.add(portfolioDefinitionConfigurationKey, portfolioDefinitionConfiguration);
     }
 

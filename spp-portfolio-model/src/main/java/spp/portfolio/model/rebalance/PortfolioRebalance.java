@@ -59,4 +59,6 @@ public class PortfolioRebalance
     private BigDecimal portfolioCash;
     @OneToMany(mappedBy = "portfolioRebalance", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Collection<PortfolioConstituent> portfolioConstituents;
+    @OneToMany(mappedBy = "portfolioRebalance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Collection<PortfolioRebalanceTransaction> portfolioRebalanceTransactions;
 }

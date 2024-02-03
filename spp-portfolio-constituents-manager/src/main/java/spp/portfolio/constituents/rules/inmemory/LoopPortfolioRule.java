@@ -51,7 +51,7 @@ public class LoopPortfolioRule implements PortfolioRule
         if(Objects.isNull(context.fetch(loopRuleStatesKey)))
             context.add(loopRuleStatesKey, new LinkedBlockingDeque<>());
         
-        context.fetch(loopRuleStatesKey).push(new LoopState(loopLabel, maxIterations, new AtomicInteger(-1)));
+        context.fetch(loopRuleStatesKey).push(new LoopState(loopLabel, maxIterations, new AtomicInteger(0)));
     }
     
     public static final record LoopState(String loopLabel, Integer maxIterations, AtomicInteger currentIteration) {};

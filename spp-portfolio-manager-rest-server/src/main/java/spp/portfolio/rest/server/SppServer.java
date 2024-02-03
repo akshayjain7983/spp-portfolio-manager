@@ -7,6 +7,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+
+@OpenAPIDefinition(info = @Info(title = "Portfolio Manager Open API"))
 @SpringBootApplication(scanBasePackages = "spp.portfolio")
 @EnableJpaAuditing
 @EnableTransactionManagement

@@ -50,5 +50,5 @@ s.status = 'Active'
 AND
 s.segment IN :segment
 AND 
-s.exchange IN :exchange
+s.exchange = :exchange
 AND s.exchange_code = '500086'

@@ -4,8 +4,8 @@ import static spp.portfolio.manager.utilities.sql.TuplesResultSetExtractors.tupl
 import static spp.portfolio.manager.utilities.sql.TuplesResultSetExtractors.tupleMapperListResultSetExtractor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,17 +41,9 @@ public class SecurityDataDao
     public Collection<Security> loadSecurities(ApplicationContext daoContext)
     {
         LocalDate rebalanceDate = daoContext.fetch(Key.of("rebalanceDate", LocalDate.class));
-        Collection<SecurityType> securityTypes = daoContext.fetch(Key.of("securityTypes", KeyType.<Collection<SecurityType>>of(Collection.class)));
-        Collection<String> exchanges = daoContext.fetch(Key.of("exchanges", KeyType.<Collection<String>>of(Collection.class)));
+        Map<String, Collection<SecurityType>> exchangesWithSecurityTypes = daoContext.fetch(Key.of("exchangesWithSecurityTypes", KeyType.<Map<String, Collection<SecurityType>>>of(Map.class)));
         
         String sql = SqlQueryHolder.getSql(SqlFiles.CONSTITUENTS_SQL, "loadSecurities");
-        Query jpaQuery = entityManager.createNativeQuery(sql, Tuple.class);
-        SQLHelper.setObject(jpaQuery, "rebalanceDate", rebalanceDate);
-        SQLHelper.setObject(jpaQuery, "segment", securityTypes.stream().map(SecurityType::getSymbol).collect(Collectors.toSet()));
-        SQLHelper.setObject(jpaQuery, "exchange", exchanges);
-        List<Tuple> securitiesTuple = jpaQuery.getResultList();
-        if(CollectionUtils.isEmpty(securitiesTuple))
-            return Collections.emptyList();
         
         TupleMapper<Map<Attribute<?>, Optional<Object>>> tupleAttributesMapper = tupleAttributeMapper(te->Attribute.ofName(te.getAlias(), te.getJavaType()));
         
@@ -66,7 +58,26 @@ public class SecurityDataDao
                 };
                 
         TuplesResultSetExtractor<List<Security>> securityExtractor = tupleMapperListResultSetExtractor(tupleSecurityMapper);
-        Collection<Security> securities = securityExtractor.extractFromTuples(securitiesTuple);
+        
+        final Collection<Security> securities = new ArrayList<>();
+        
+        for(String exchange: exchangesWithSecurityTypes.keySet())
+        {
+            Collection<SecurityType> securityTypes = exchangesWithSecurityTypes.get(exchange);
+            
+            Query jpaQuery = entityManager.createNativeQuery(sql, Tuple.class);
+            SQLHelper.setObject(jpaQuery, "rebalanceDate", rebalanceDate);
+            SQLHelper.setObject(jpaQuery, "segment", securityTypes.stream().map(SecurityType::getSymbol).collect(Collectors.toSet()));
+            SQLHelper.setObject(jpaQuery, "exchange", exchange);
+            List<Tuple> securitiesTuple = jpaQuery.getResultList();
+            
+            Optional.ofNullable(securitiesTuple)
+            .filter(CollectionUtils::isNotEmpty)
+            .map(securityExtractor::extractFromTuples)
+            .filter(CollectionUtils::isNotEmpty)
+            .ifPresent(securities::addAll);
+        }
+        
         return securities;
     }
 }

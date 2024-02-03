@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ContextConfiguration;
 
+import spp.portfolio.model.definition.configuration.rules.SecurityType;
 import spp.portfolio.model.marketdata.Holiday;
 
 @DataJpaTest
@@ -32,11 +33,11 @@ class HolidayRepositoryTest
     @Test
     public void testSearchByExchangeAndSegmentAndDate()
     {
-        Optional<Holiday> holidayTrue = holidayRepository.searchByExchangeAndSegmentAndDate("BSE", "Equity", LocalDate.of(2023, 12, 25));
+        Optional<Holiday> holidayTrue = holidayRepository.searchByExchangeIgnoreCaseAndSegmentIgnoreCaseAndDate("BSE", SecurityType.EQUITY.name(), LocalDate.of(2023, 12, 25));
         assertNotNull(holidayTrue);
         assertTrue(holidayTrue.isPresent());
         
-        Optional<Holiday> holidayFalse = holidayRepository.searchByExchangeAndSegmentAndDate("BSE", "Equity", LocalDate.of(2023, 12, 19));
+        Optional<Holiday> holidayFalse = holidayRepository.searchByExchangeIgnoreCaseAndSegmentIgnoreCaseAndDate("BSE", SecurityType.EQUITY.name(), LocalDate.of(2023, 12, 19));
         assertNotNull(holidayFalse);
         assertFalse(holidayFalse.isPresent());
     }
