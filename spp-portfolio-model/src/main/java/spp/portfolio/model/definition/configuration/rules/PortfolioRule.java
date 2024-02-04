@@ -14,7 +14,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
     @Type(name = "LoopPortfolioRule", value = LoopPortfolioRule.class),
     @Type(name = "WeightCalculationRule", value = WeightCalculationRule.class),
     @Type(name = "WeightCappingRule", value = WeightCappingRule.class),
-    @Type(name = "PortfolioTrasactionsRule", value = PortfolioTrasactionsRule.class) 
+    @Type(name = "PortfolioTrasactionsRule", value = PortfolioTrasactionsRule.class),
+    @Type(name = "RankingRule", value = RankingRule.class)
 })
 public interface PortfolioRule
 {
