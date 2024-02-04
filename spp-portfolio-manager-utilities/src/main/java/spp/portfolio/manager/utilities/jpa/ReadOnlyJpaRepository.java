@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @NoRepositoryBean
 public interface ReadOnlyJpaRepository<T, ID> extends JpaRepository<T, ID>
 {

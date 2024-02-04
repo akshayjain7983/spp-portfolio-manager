@@ -52,6 +52,8 @@ public class PortfolioConstituentsManagerConstants
     public static final Key<PortfolioConfiguration> portfolioConfigurationKey = Key.of("portfolioConfiguration", PortfolioConfiguration.class);
     public static final Key<BlockingDeque<LoopPortfolioRule.LoopState>> loopRuleStatesKey = Key.of("loopRuleStates", KeyType.<BlockingDeque<LoopPortfolioRule.LoopState>>of(BlockingDeque.class));
     public static final Key<Collection<PortfolioRebalanceTransaction>> portfolioRebalanceTransactionsKey = Key.of("portfolioRebalanceTransactions", KeyType.<Collection<PortfolioRebalanceTransaction>>of(Collection.class));
+    public static final Key<PortfolioRebalance> portfolioRebalanceLastKey = Key.of("portfolioRebalanceLast", KeyType.<PortfolioRebalance>of(PortfolioRebalance.class));
+    public static final Key<BigDecimal> portfolioSizeCurrentKey = Key.of("portfolioSizeCurrent", KeyType.<BigDecimal>of(BigDecimal.class));
     
     public static final int bigDecimalScale = 64;
     
@@ -60,7 +62,7 @@ public class PortfolioConstituentsManagerConstants
     public static final Function<ConcurrentApplicationContext, Boolean> isInsideALoop = context -> Optional.ofNullable(context.fetch(loopRuleStatesKey)).map(s->!s.isEmpty()).orElse(Boolean.FALSE);
     public static final Consumer<ConcurrentApplicationContext> breakLoop = context -> Optional.of(isInsideALoop.apply(context)).filter(Boolean::booleanValue).ifPresent(b->context.fetch(loopRuleStatesKey).pop());
     public static final Function<ConcurrentApplicationContext, Boolean> isInnermostLoopIterationExhausted = context -> Optional.ofNullable(context.fetch(loopRuleStatesKey)).map(s->s.peek()).map(ls->ls.maxIterations().intValue() == ls.currentIteration().get()).orElse(Boolean.FALSE);
-    public static final Function<ConcurrentApplicationContext, BigDecimal> findPortfolioAmountLimit = context -> context.fetch(portfolioConfigurationKey).getPortfolioAmountLimit();
+    public static final Function<ConcurrentApplicationContext, BigDecimal> findPortfolioInvestmentAmountLimit = context -> context.fetch(portfolioConfigurationKey).getPortfolioInvestmentAmountLimit();
     public static final BiFunction<Collection<Security>, String, BigDecimal> findSumOfSecurityAttribute = (securities, attr) -> Optional.ofNullable(securities).orElse(Collections.emptyList()).stream().map(s->s.getAttributeValue(attr, BigDecimal.class).orElse(null)).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);;
     public static final BinaryOperator<BigDecimal> safeDivide = (dividend, divisor) -> Optional.of(BigDecimal.ZERO).filter(z->z.compareTo(divisor)!=0).map(z->dividend.divide(divisor, bigDecimalScale, RoundingMode.HALF_UP)).orElse(BigDecimal.ZERO);
     public static final Supplier<SecurityDataDao> securityDataDaoSupplier = () -> SpringContextHolder.getBean(SecurityDataDao.class);
@@ -112,5 +114,4 @@ public class PortfolioConstituentsManagerConstants
                       .findFirst()
                       .orElseThrow(()->new SppException("Portfolio definition does not have valid configuration for rebalance date"));
           };
-
 }

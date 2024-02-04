@@ -1,6 +1,6 @@
 package spp.portfolio.constituents.rules.inmemory;
 
-import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.findPortfolioAmountLimit;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.*;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.findSumOfSecurityAttribute;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.safeDivide;
 
@@ -19,12 +19,9 @@ public class MarketValueSecurityWeightCalculator implements SecurityWeightCalcul
     {
         setupMarketValue(securities);
         BigDecimal marketValueTotal = findSumOfSecurityAttribute.apply(securities, "market_value");        
-        BigDecimal portfolioAmountLimit = findPortfolioAmountLimit.apply(context);
-        BigDecimal deemedCash = portfolioAmountLimit.subtract(marketValueTotal);
-        marketValueTotal = BigDecimal.ZERO.compareTo(deemedCash) < 0 ? marketValueTotal.add(deemedCash) : marketValueTotal;
-        
+        BigDecimal portfolioSizeCurrent = context.fetch(portfolioSizeCurrentKey);
+        marketValueTotal = portfolioSizeCurrent.compareTo(marketValueTotal) < 0 ? marketValueTotal : portfolioSizeCurrent;
         setupMarketValueWeight(securities, marketValueTotal);
-        
         return securities;
     }
 

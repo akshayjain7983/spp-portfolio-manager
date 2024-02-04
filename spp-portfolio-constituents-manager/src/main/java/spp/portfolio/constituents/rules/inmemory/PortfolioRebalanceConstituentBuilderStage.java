@@ -4,6 +4,7 @@ import static io.github.funofprograming.context.impl.ApplicationContextHolder.ge
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioConfigurationKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceTransactionsKey;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioSizeCurrentKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.rebalanceContextNameBuilder;
 
 import java.math.BigDecimal;
@@ -53,14 +54,14 @@ public class PortfolioRebalanceConstituentBuilderStage implements PortfolioRebal
         
         Collection<PortfolioRebalanceTransaction> portfolioRebalanceTransactions = context.fetch(portfolioRebalanceTransactionsKey);
         portfolioRebalance.setPortfolioRebalanceTransactions(portfolioRebalanceTransactions);
-        
+        BigDecimal portfolioSizeCurrent = context.fetch(portfolioSizeCurrentKey);
         BigDecimal rebalanceInvestmentMarketValue = 
                 portfolioRebalance.getPortfolioConstituents()
                 .stream()
                 .map(c->Optional.ofNullable(c.getInvestmentMarketValue()).orElse(BigDecimal.ZERO))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         
-        BigDecimal rebalanceCash = configuration.getPortfolioAmountLimit().subtract(rebalanceInvestmentMarketValue);
+        BigDecimal rebalanceCash = portfolioSizeCurrent.subtract(rebalanceInvestmentMarketValue);
         
         portfolioRebalance.setInvestmentMarketValue(rebalanceInvestmentMarketValue);
         portfolioRebalance.setPortfolioCash(rebalanceCash);

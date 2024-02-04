@@ -12,7 +12,8 @@ import spp.portfolio.model.definition.configuration.rules.SecurityType;
 public class PortfolioConfiguration
 {
     private final Currency currency;
-    private final BigDecimal portfolioAmountLimit;
+    private final BigDecimal portfolioInvestmentAmountLimit;
+    private final Boolean portfolioInvestmentAmountLimitUpdated;
     private Map<String, Collection<SecurityType>> exchangesWithSecurityTypes;
     private PortfolioConfigurationConstituents portfolioConfigurationConstituents;
 }

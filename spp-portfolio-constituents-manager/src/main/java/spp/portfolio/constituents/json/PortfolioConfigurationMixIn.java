@@ -1,5 +1,7 @@
 package spp.portfolio.constituents.json;
 
+import java.math.BigDecimal;
+
 import org.springframework.boot.jackson.JsonMixin;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -14,6 +16,7 @@ public abstract class PortfolioConfigurationMixIn
     @JsonCreator
     public PortfolioConfigurationMixIn(
             @JsonProperty("currency") Currency currency
-            , @JsonProperty("portfolioAmountLimit") Long portfolioAmountLimit
+            , @JsonProperty("portfolioAmountLimit") BigDecimal portfolioAmountLimit
+            , @JsonProperty("portfolioInvestmentAmountLimitUpdated") Boolean portfolioInvestmentAmountLimitUpdated
             ){}
 }
