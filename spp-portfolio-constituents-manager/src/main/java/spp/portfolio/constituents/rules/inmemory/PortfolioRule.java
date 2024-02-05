@@ -19,7 +19,9 @@ import spp.portfolio.constituents.rules.Security;
     @Type(name = "LoopPortfolioRule", value = LoopPortfolioRule.class),
     @Type(name = "WeightCalculationRule", value = WeightCalculationRule.class),
     @Type(name = "WeightCappingRule", value = WeightCappingRule.class),
-    @Type(name = "PortfolioTrasactionsRule", value = PortfolioTrasactionsRule.class)
+    @Type(name = "PortfolioTrasactionsRule", value = PortfolioTrasactionsRule.class),
+    @Type(name = "RankingRule", value = RankingRule.class),
+    @Type(name = "MaxSecuritiesRule", value = MaxSecuritiesRule.class)    
 })
 public interface PortfolioRule
 {

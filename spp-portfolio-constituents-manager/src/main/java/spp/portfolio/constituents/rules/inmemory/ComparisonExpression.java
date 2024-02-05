@@ -3,6 +3,7 @@ package spp.portfolio.constituents.rules.inmemory;
 import static spp.portfolio.manager.utilities.json.JsonUtil.fromJson;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -83,6 +84,12 @@ public class ComparisonExpression implements Expression<Boolean>
             case ZonedDateTime t->
             {
                 return compareZonedDateTimes((ZonedDateTime)leftSideObject, (ZonedDateTime)rightSideObject);
+            }
+            case Instant t -> 
+            {
+                ZonedDateTime leftSide = ZonedDateTime.ofInstant((Instant)leftSideObject, ZoneOffset.UTC);
+                ZonedDateTime rightSide = ZonedDateTime.ofInstant((Instant)leftSideObject, ZoneOffset.UTC);
+                return compareZonedDateTimes(leftSide, rightSide);
             }
             case Number n->
             {
