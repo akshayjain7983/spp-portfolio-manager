@@ -11,7 +11,7 @@ import spp.portfolio.model.rebalance.PortfolioRebalanceType;
 
 public interface PortfolioConstituentsManager
 {
-    String triggerRebalance(Long portfolioDefinitionId, PortfolioRebalanceType portfolioRebalanceType, LocalDate rebalanceDate);
+    String rebalance(Long portfolioDefinitionId, PortfolioRebalanceType portfolioRebalanceType, LocalDate fromDate, LocalDate toDate);
     
     Optional<PortfolioRebalance> getRebalance(@PathVariable UUID runId);
     

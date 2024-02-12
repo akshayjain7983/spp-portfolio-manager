@@ -37,11 +37,12 @@ public class PortfolioConstituentsController implements PortfolioConstituentsMan
     private PortfolioRebalanceRepository portfolioRebalanceRepository;
     
     @Override
-    @PostMapping("/portfolio-constituents/{portfolioDefinitionId}/{portfolioRebalanceType}")
-    public String triggerRebalance(
+    @PostMapping("/portfolio-constituents/rebalance/{portfolioDefinitionId}/{portfolioRebalanceType}")
+    public String rebalance(
             @PathVariable Long portfolioDefinitionId
             , @PathVariable PortfolioRebalanceType portfolioRebalanceType
-            , @RequestParam LocalDate rebalanceDate
+            , @RequestParam LocalDate fromDate
+            , @RequestParam LocalDate toDate
             )
     {
         UUID runId = UUID.randomUUID();
@@ -50,7 +51,7 @@ public class PortfolioConstituentsController implements PortfolioConstituentsMan
                 .runId(runId)
                 .portfolioDefinitionId(portfolioDefinitionId)
                 .portfolioRebalanceType(portfolioRebalanceType)
-                .date(rebalanceDate)
+                .date(fromDate)
                 .build();
         
         PortfolioDefinitionConfiguration portfolioDefinitionConfiguration = findPortfolioDefinitionConfiguration.apply(portfolioRebalanceCommand);

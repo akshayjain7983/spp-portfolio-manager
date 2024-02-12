@@ -1,12 +1,12 @@
 {loadSecurities}
-SELECT 
+SELECT
 :rebalanceDate as_of
 , s.id 
 , s.exchange_code
-, s.exchange 
+, e."name" exchange 
 , s.security_name
 , s.exchange_group 
-, s.segment 
+, es."name" segment
 , s.status 
 , srd.face_value 
 , srd.total_outstanding_shares 
@@ -23,7 +23,12 @@ SELECT
 , sp.volume 
 , sid.isin
 , sid.ticker
-FROM spp.securities s 
+FROM spp.securities s
+INNER JOIN spp.exchange_segments es 
+ON s.exchange_segment_id = es.id 
+AND es.status = 'Active'
+INNER JOIN spp.exchanges e 
+ON es.exchange_id = e.id 
 LEFT OUTER JOIN spp.security_reference_data srd  
 ON s.id = srd.security_id 
 AND srd.effective_date <= :rebalanceDate
@@ -48,6 +53,6 @@ ON s.id = sid.security_id
 WHERE 
 s.status = 'Active'
 AND
-s.segment IN :segment
+es."name" IN :segment
 AND 
-s.exchange = :exchange
+e."name"  IN :exchange
