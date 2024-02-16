@@ -33,7 +33,7 @@ import spp.portfolio.model.definition.PortfolioDefinitionConfiguration;
 @Table(catalog = "spp", schema = "spp", name = "portfolio_rebalance")
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(of = {"id"})
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class PortfolioRebalance

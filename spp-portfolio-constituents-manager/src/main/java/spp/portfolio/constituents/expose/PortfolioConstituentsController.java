@@ -5,13 +5,18 @@ import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConsta
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,38 +41,52 @@ public class PortfolioConstituentsController implements PortfolioConstituentsMan
     @Autowired
     private PortfolioRebalanceRepository portfolioRebalanceRepository;
     
+    @Autowired
+    @Qualifier("portfolioRebalanceTaskExecutor")
+    private ExecutorService portfolioRebalanceTaskExecutor;
+    
     @Override
     @PostMapping("/portfolio-constituents/rebalance/{portfolioDefinitionId}/{portfolioRebalanceType}")
-    public String rebalance(
+    public Map<LocalDate, String> rebalance(
             @PathVariable Long portfolioDefinitionId
             , @PathVariable PortfolioRebalanceType portfolioRebalanceType
             , @RequestParam LocalDate fromDate
             , @RequestParam LocalDate toDate
             )
     {
-        UUID runId = UUID.randomUUID();
-        PortfolioRebalanceCommand portfolioRebalanceCommand = 
-                PortfolioRebalanceCommand.builder()
-                .runId(runId)
-                .portfolioDefinitionId(portfolioDefinitionId)
-                .portfolioRebalanceType(portfolioRebalanceType)
-                .date(fromDate)
-                .build();
-        
-        PortfolioDefinitionConfiguration portfolioDefinitionConfiguration = findPortfolioDefinitionConfiguration.apply(portfolioRebalanceCommand);
-        Map<String, Collection<SecurityType>> exchangesWithSecurityTypes = portfolioDefinitionConfiguration.getConfiguration().getExchangesWithSecurityTypes();
-        Map<String, Collection<String>> exchangesWithSecurityTypesStr = exchangesWithSecurityTypes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e->e.getValue().stream().map(SecurityType::name).collect(Collectors.toList())));
-        Boolean isHolidayForAnyExchanges = isHolidayForAnyExchange.apply(exchangesWithSecurityTypesStr, portfolioRebalanceCommand.getDate());
-        
-        if(!isHolidayForAnyExchanges)
-        {
-            portfolioRebalanceExecutor.execute(portfolioRebalanceCommand);
-            return runId.toString();
-        }
-        else
-        {
-            return "It's a holiday";
-        }
+	Map<LocalDate, String> commandResult = new LinkedHashMap<>();
+	CompletionStage<PortfolioRebalance> future = CompletableFuture.completedStage(null);
+	LocalDate rebalanceDate = fromDate;
+	while(!rebalanceDate.isAfter(toDate))
+	{
+	    UUID runId = UUID.randomUUID();
+	        PortfolioRebalanceCommand portfolioRebalanceCommand = 
+	                PortfolioRebalanceCommand.builder()
+	                .runId(runId)
+	                .portfolioDefinitionId(portfolioDefinitionId)
+	                .portfolioRebalanceType(portfolioRebalanceType)
+	                .date(rebalanceDate)
+	                .build();
+	        
+	        PortfolioDefinitionConfiguration portfolioDefinitionConfiguration = findPortfolioDefinitionConfiguration.apply(portfolioRebalanceCommand);
+	        Map<String, Collection<SecurityType>> exchangesWithSecurityTypes = portfolioDefinitionConfiguration.getConfiguration().getExchangesWithSecurityTypes();
+	        Map<String, Collection<String>> exchangesWithSecurityTypesStr = exchangesWithSecurityTypes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e->e.getValue().stream().map(SecurityType::name).collect(Collectors.toList())));
+	        Boolean isHolidayForAnyExchanges = isHolidayForAnyExchange.apply(exchangesWithSecurityTypesStr, portfolioRebalanceCommand.getDate());
+	        
+	        if(!isHolidayForAnyExchanges)
+	        {
+	            future = future.thenApplyAsync((pr)->portfolioRebalanceExecutor.execute(portfolioRebalanceCommand), portfolioRebalanceTaskExecutor);
+	            commandResult.put(rebalanceDate, runId.toString());
+	        }
+	        else
+	        {
+	            commandResult.put(rebalanceDate, "It's a holiday");
+	        }
+	        
+	        rebalanceDate = rebalanceDate.plusDays(1);
+	}
+	
+        return commandResult;
     }
 
     @Override

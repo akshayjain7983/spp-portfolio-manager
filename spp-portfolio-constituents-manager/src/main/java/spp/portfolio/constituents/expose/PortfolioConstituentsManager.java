@@ -1,6 +1,7 @@
 package spp.portfolio.constituents.expose;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,7 +12,7 @@ import spp.portfolio.model.rebalance.PortfolioRebalanceType;
 
 public interface PortfolioConstituentsManager
 {
-    String rebalance(Long portfolioDefinitionId, PortfolioRebalanceType portfolioRebalanceType, LocalDate fromDate, LocalDate toDate);
+    Map<LocalDate, String> rebalance(Long portfolioDefinitionId, PortfolioRebalanceType portfolioRebalanceType, LocalDate fromDate, LocalDate toDate);
     
     Optional<PortfolioRebalance> getRebalance(@PathVariable UUID runId);
     

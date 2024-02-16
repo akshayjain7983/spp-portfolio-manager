@@ -55,4 +55,4 @@ s.status = 'Active'
 AND
 es."name" IN :segment
 AND 
-e."name"  IN :exchange
+e."name" = :exchange

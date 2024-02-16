@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Table(catalog = "spp", schema = "spp", name = "portfolio_definition")
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(of = {"id", "name", "effectiveDate", "discontinuedDate"})
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class PortfolioDefinition

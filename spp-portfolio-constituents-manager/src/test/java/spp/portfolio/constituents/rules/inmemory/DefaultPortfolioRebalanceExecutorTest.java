@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDate;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;
@@ -56,10 +55,7 @@ class DefaultPortfolioRebalanceExecutorTest
                 .portfolioRebalanceType(PortfolioRebalanceType.INDICATIVE)
                 .build();
         
-        CompletableFuture<PortfolioRebalance> rebalanceFuture = executor.execute(command);
-        while(!rebalanceFuture.isDone())
-            Thread.sleep(1000);
-        PortfolioRebalance rebalance = rebalanceFuture.get();
+        PortfolioRebalance rebalance = executor.execute(command);
         assertNotNull(rebalance);
         assertNotNull(rebalance.getId());
     }

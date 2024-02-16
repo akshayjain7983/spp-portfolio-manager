@@ -22,7 +22,6 @@
 		<module>spp-portfolio-configuration-manager</module>
 		<module>spp-portfolio-constituents-manager</module>
 		<module>spp-portfolio-manager-rest-server</module>
-		<module>spp-portfolio-manager-workflow-orchestration</module>
 	</modules>
 
 	<dependencyManagement>
@@ -45,11 +44,6 @@
 			<dependency>
 				<groupId>spp</groupId>
 				<artifactId>spp-portfolio-constituents-manager</artifactId>
-				<version>${revision}</version>
-			</dependency>
-			<dependency>
-				<groupId>spp</groupId>
-				<artifactId>spp-portfolio-manager-workflow-orchestration</artifactId>
 				<version>${revision}</version>
 			</dependency>
 			<dependency>

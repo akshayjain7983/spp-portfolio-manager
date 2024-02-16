@@ -1,15 +1,15 @@
 package spp.portfolio.constituents.spring;
 
 import java.util.List;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.fasterxml.jackson.databind.Module;
 
@@ -22,7 +22,6 @@ import spp.portfolio.constituents.rules.inmemory.PortfolioRebalancePersistStage;
 import spp.portfolio.constituents.util.SqlFiles;
 
 @Configuration
-@EnableAsync
 public class PortfolioConstituentsSpringConfiguration
 {
     
@@ -39,15 +38,14 @@ public class PortfolioConstituentsSpringConfiguration
     
     @Bean
     @Qualifier("portfolioRebalanceTaskExecutor")
-    Executor portfolioRebalanceTaskExecutor() 
+    ExecutorService portfolioRebalanceTaskExecutor() 
     {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(2);
-        executor.setQueueCapacity(500);
-        executor.setThreadNamePrefix("PortfolioRebalanceTaskExecutor-");
-        executor.initialize();
-        return executor;
+	return
+            	Executors.newFixedThreadPool(2
+            		, r->{
+            		    AtomicInteger counter = new AtomicInteger(1);
+            		    return new Thread(Thread.currentThread().getThreadGroup(), r, "PortfolioRebalanceTaskExecutor-%d".formatted(counter.incrementAndGet()));
+            		});
     }
     
     @Bean

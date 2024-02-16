@@ -40,7 +40,6 @@ public class Holiday implements Comparable<Holiday>
     private String segment;
     private String type;
     private String reason;
-    private String lastUpdatedBy;
     @LastModifiedBy
     private Instant lastUpdatedTimestamp;
     

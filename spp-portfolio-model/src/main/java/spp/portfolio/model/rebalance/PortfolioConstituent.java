@@ -19,13 +19,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @Entity
 @Table(catalog = "spp", schema = "spp", name = "portfolio_rebalance_constituents")
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(of = {"id"})
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class PortfolioConstituent
@@ -34,6 +35,7 @@ public class PortfolioConstituent
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @ToString.Exclude
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "portfolio_rebalance_id", nullable = false)

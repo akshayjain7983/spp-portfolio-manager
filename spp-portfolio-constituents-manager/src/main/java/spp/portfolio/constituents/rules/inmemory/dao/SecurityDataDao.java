@@ -52,7 +52,7 @@ public class SecurityDataDao
                 {
                     Long id = SQLHelper.extractFromTuple(tuple, "id", Long.class);
                     String segment = SQLHelper.extractFromTuple(tuple, "segment", String.class);
-                    SecurityType securityTypeFromDb = SecurityType.getFromSymbol(segment);
+                    SecurityType securityTypeFromDb = SecurityType.valueOf(segment);
                     Map<Attribute<?>, Optional<Object>> attributes = tupleAttributesMapper.mapTuple(tuple, rowNum);
                     return new SecurityImpl(id, securityTypeFromDb, attributes);
                 };
@@ -67,7 +67,7 @@ public class SecurityDataDao
             
             Query jpaQuery = entityManager.createNativeQuery(sql, Tuple.class);
             SQLHelper.setObject(jpaQuery, "rebalanceDate", rebalanceDate);
-            SQLHelper.setObject(jpaQuery, "segment", securityTypes.stream().map(SecurityType::getSymbol).collect(Collectors.toSet()));
+            SQLHelper.setObject(jpaQuery, "segment", securityTypes.stream().map(SecurityType::name).collect(Collectors.toSet()));
             SQLHelper.setObject(jpaQuery, "exchange", exchange);
             List<Tuple> securitiesTuple = jpaQuery.getResultList();
             

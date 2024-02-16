@@ -23,6 +23,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import spp.portfolio.model.definition.configuration.PortfolioConfiguration;
 
 @Data
@@ -30,7 +31,7 @@ import spp.portfolio.model.definition.configuration.PortfolioConfiguration;
 @Table(catalog = "spp", schema = "spp", name = "portfolio_definition_configuration")
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(of = {"id", "validFrom", "validTo"})
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class PortfolioDefinitionConfiguration
@@ -39,6 +40,7 @@ public class PortfolioDefinitionConfiguration
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @ToString.Exclude
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "portfolio_definition_id", nullable = false)
