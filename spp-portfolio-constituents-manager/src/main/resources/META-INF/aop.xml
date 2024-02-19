@@ -1,0 +1,12 @@
+<aspectj>
+
+	<weaver options="-verbose -showWeaveInfo">
+		<include within="spp.portfolio.constituents.rules.inmemory..*"/>
+		<include within="spp.portfolio.constituents.log..*"/>
+	</weaver>
+
+	<aspects>
+		<aspect name="spp.portfolio.constituents.log.PortfolioRuleLogAspect"/>
+	</aspects>
+
+</aspectj>

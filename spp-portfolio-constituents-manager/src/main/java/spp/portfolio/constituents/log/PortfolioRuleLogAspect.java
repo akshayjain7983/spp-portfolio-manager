@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import io.github.funofprograming.context.ConcurrentApplicationContext;
 import spp.portfolio.constituents.rules.inmemory.PortfolioRule;
 
-@Component
+//@Component
 @Aspect
 public class PortfolioRuleLogAspect
 {

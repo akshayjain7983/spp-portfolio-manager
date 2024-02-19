@@ -15,10 +15,10 @@ import com.fasterxml.jackson.databind.Module;
 
 import spp.portfolio.constituents.json.PortfolioConfigurationModule;
 import spp.portfolio.constituents.rebalance.CompositePortfolioRebalanceStage;
-import spp.portfolio.constituents.rules.inmemory.PortfolioRebalanceConstituentBuilderStage;
-import spp.portfolio.constituents.rules.inmemory.PortfolioRebalanceContextCleanupStage;
-import spp.portfolio.constituents.rules.inmemory.PortfolioRebalanceContextSetupStage;
-import spp.portfolio.constituents.rules.inmemory.PortfolioRebalancePersistStage;
+import spp.portfolio.constituents.stage.PortfolioRebalanceContextCleanupStage;
+import spp.portfolio.constituents.stage.PortfolioRebalancePersistStage;
+import spp.portfolio.constituents.stage.inmemory.PortfolioRebalanceConstituentBuilderStage;
+import spp.portfolio.constituents.stage.inmemory.PortfolioRebalanceContextSetupStage;
 import spp.portfolio.constituents.util.SqlFiles;
 
 @Configuration

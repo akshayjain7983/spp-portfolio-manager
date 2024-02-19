@@ -28,6 +28,7 @@ import io.github.funofprograming.context.Key;
 import io.github.funofprograming.context.KeyType;
 import io.github.funofprograming.context.impl.ApplicationContextImpl;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
 import spp.portfolio.constituents.rules.Security;
 import spp.portfolio.constituents.rules.SecurityType;
@@ -39,6 +40,7 @@ import spp.portfolio.model.rebalance.PortfolioRebalance;
 import spp.portfolio.model.rebalance.PortfolioRebalanceType;
 
 @Data
+@NoArgsConstructor
 public class SourceDataRule implements PortfolioRule
 {
     @Override

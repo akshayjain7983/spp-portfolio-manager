@@ -1,4 +1,4 @@
-package spp.portfolio.constituents.rules.inmemory;
+package spp.portfolio.constituents.stage;
 
 import static io.github.funofprograming.context.impl.ApplicationContextHolder.clearGlobalContext;
 import static io.github.funofprograming.context.impl.ApplicationContextHolder.getGlobalContext;

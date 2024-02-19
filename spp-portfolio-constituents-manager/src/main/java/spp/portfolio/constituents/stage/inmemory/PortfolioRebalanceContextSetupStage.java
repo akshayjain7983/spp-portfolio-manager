@@ -1,4 +1,4 @@
-package spp.portfolio.constituents.rules.inmemory;
+package spp.portfolio.constituents.stage.inmemory;
 
 import static io.github.funofprograming.context.impl.ApplicationContextHolder.getGlobalContext;
 import static io.github.funofprograming.context.impl.ApplicationContextHolder.setGlobalContext;
@@ -17,6 +17,7 @@ import io.github.funofprograming.context.ConcurrentApplicationContext;
 import io.github.funofprograming.context.impl.ConcurrentApplicationContextImpl;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceStage;
+import spp.portfolio.constituents.rules.inmemory.PortfolioConfiguration;
 import spp.portfolio.model.definition.PortfolioDefinitionConfiguration;
 import spp.portfolio.model.rebalance.PortfolioRebalance;
 
