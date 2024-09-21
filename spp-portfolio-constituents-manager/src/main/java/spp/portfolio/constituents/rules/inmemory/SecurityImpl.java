@@ -5,11 +5,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import spp.portfolio.constituents.rules.Security;
 import spp.portfolio.constituents.rules.SecurityType;
 import spp.portfolio.manager.utilities.json.JsonUtil;
 
 @Data
+@EqualsAndHashCode(of = {"securityId"})
 public class SecurityImpl implements Security
 {
     private final Long securityId;
@@ -29,6 +31,9 @@ public class SecurityImpl implements Security
     public synchronized <T> void setAttributeValue(String attributeKey, Optional<T> attributeValue)
     {
         Objects.requireNonNull(attributeKey, "attributeKey missing");
-        attributes.put(Attribute.ofName(attributeKey, attributeValue.getClass()), Optional.ofNullable(attributeValue).flatMap(v->v.map(l->(Object)l)));
+        Objects.requireNonNull(attributeValue, "attributeValue missing");
+        Class<?> type = attributeValue.map(Object::getClass).orElse(null);
+        Optional<Object> value = attributeValue.map(v->(Object)v);
+        attributes.put(Attribute.ofName(attributeKey, type), value);
     }
 }

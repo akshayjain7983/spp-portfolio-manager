@@ -1,11 +1,13 @@
 package spp.portfolio.constituents.rules.inmemory.dao;
 
 import static spp.portfolio.manager.utilities.sql.TuplesResultSetExtractors.tupleAttributeMapper;
+import static spp.portfolio.manager.utilities.sql.TuplesResultSetExtractors.tupleMapOfListMapperResultSetExtractor;
 import static spp.portfolio.manager.utilities.sql.TuplesResultSetExtractors.tupleMapperListResultSetExtractor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,8 +39,15 @@ public class SecurityDataDao
     @Autowired
     private EntityManager entityManager;
     
-    @SuppressWarnings("unchecked")
     public Collection<Security> loadSecurities(ApplicationContext daoContext)
+    {
+	Collection<Security> securities = loadSecuritiesRefDataPrices(daoContext);
+        loadForecastPScore(securities, daoContext);
+        return securities;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Collection<Security> loadSecuritiesRefDataPrices(ApplicationContext daoContext)
     {
         LocalDate rebalanceDate = daoContext.fetch(Key.of("rebalanceDate", LocalDate.class));
         Map<String, Collection<SecurityType>> exchangesWithSecurityTypes = daoContext.fetch(Key.of("exchangesWithSecurityTypes", KeyType.<Map<String, Collection<SecurityType>>>of(Map.class)));
@@ -79,5 +88,37 @@ public class SecurityDataDao
         }
         
         return securities;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void loadForecastPScore(Collection<Security> securities, ApplicationContext daoContext) 
+    {
+	if(CollectionUtils.isEmpty(securities))
+	    return;
+	
+	LocalDate rebalanceDate = daoContext.fetch(Key.of("rebalanceDate", LocalDate.class));
+	Collection<Long> securityIds = securities.stream().map(Security::getSecurityId).collect(Collectors.toList());
+	String sql = SqlQueryHolder.getSql(SqlFiles.CONSTITUENTS_SQL, "loadForecastPScore");
+	Query jpaQuery = entityManager.createNativeQuery(sql, Tuple.class);
+        SQLHelper.setObject(jpaQuery, "rebalanceDate", rebalanceDate);
+        SQLHelper.setObject(jpaQuery, "securityIds", securityIds);
+        List<Tuple> securitiesForecastPscoreTuples = jpaQuery.getResultList();
+        TupleMapper<Map<Attribute<?>, Optional<Object>>> tupleAttributesMapper = tupleAttributeMapper(te->Attribute.ofName(te.getAlias(), te.getJavaType()));
+        TuplesResultSetExtractor<Map<Long, List<Map<Attribute<?>, Optional<Object>>>>> forecastPScoreExtractor = 
+        	tupleMapOfListMapperResultSetExtractor((tuple, rowNum)->SQLHelper.extractFromTuple(tuple, "id", Long.class), tupleAttributesMapper);
+        
+        Map<Long, List<Map<Attribute<?>, Optional<Object>>>> forecastPScoresMap = 
+                Optional.ofNullable(securitiesForecastPscoreTuples)
+                .filter(CollectionUtils::isNotEmpty)
+                .map(forecastPScoreExtractor::extractFromTuples)
+                .orElse(Collections.emptyMap());
+        
+        securities.parallelStream()
+        .forEach(s->
+        {
+            List<Map<Attribute<?>, Optional<Object>>> forecastPScore = forecastPScoresMap.get(s.getSecurityId());
+            if(CollectionUtils.isNotEmpty(forecastPScore))
+            	s.setAttributeValue("forecast_pscores", Optional.ofNullable(forecastPScore));
+        });
     }
 }

@@ -56,3 +56,10 @@ AND
 es."name" IN :segment
 AND 
 e."name" = :exchange
+
+{loadForecastPScore}
+SELECT security_id,  "date", forecast_period, forecasted_p_score 
+FROM spp.forecast_p_score fps 
+WHERE security_id IN :securityIds
+AND "date" BETWEEN :rebalanceDate::date - 30 AND :rebalanceDate
+AND is_active = True

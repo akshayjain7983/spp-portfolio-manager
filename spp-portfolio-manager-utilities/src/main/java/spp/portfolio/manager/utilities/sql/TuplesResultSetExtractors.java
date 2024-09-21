@@ -80,6 +80,47 @@ public class TuplesResultSetExtractors
         return tupleMapMapperResultSetExtractor(tupleKeyMapper, tupleValueMapper, LinkedHashMap::new);
     }
     
+    public static <K, V, C extends Collection<V>, R extends Map<K, C>> TuplesResultSetExtractor<R> tupleMapOfCollectionMapperResultSetExtractor(TupleMapper<K> tupleKeyMapper, TupleMapper<V> tupleValueMapper
+	    , Supplier<R> mapSupplier, Supplier<C> collectionSupplier)
+    {
+        return tuples ->
+        {
+            R map = mapSupplier.get();
+            
+            if (!CollectionUtils.isEmpty(tuples)) 
+            {
+                Iterator<Tuple> tuplesIterator = tuples.iterator();
+                int rowNum = 0;
+                while(tuplesIterator.hasNext())
+                {
+                    K key = tupleKeyMapper.mapTuple(tuplesIterator.next(), rowNum);
+                    V value = tupleValueMapper.mapTuple(tuplesIterator.next(), rowNum);
+                    C collection = map.get(key);
+                    if(CollectionUtils.isEmpty(collection))
+                    {
+                	collection = collectionSupplier.get();
+                	map.put(key, collection);
+                    }
+                    
+                    collection.add(value);
+                    rowNum++;
+                }
+            }
+
+            return map;
+        };
+    }
+    
+    public static <K, V> TuplesResultSetExtractor<Map<K, List<V>>> tupleMapOfListMapperResultSetExtractor(TupleMapper<K> tupleKeyMapper, TupleMapper<V> tupleValueMapper)
+    {
+	return tupleMapOfCollectionMapperResultSetExtractor(tupleKeyMapper, tupleValueMapper, LinkedHashMap::new, ArrayList::new);
+    }
+    
+    public static <K, V> TuplesResultSetExtractor<Map<K, Set<V>>> tupleMapOfSetMapperResultSetExtractor(TupleMapper<K> tupleKeyMapper, TupleMapper<V> tupleValueMapper)
+    {
+	return tupleMapOfCollectionMapperResultSetExtractor(tupleKeyMapper, tupleValueMapper, LinkedHashMap::new, LinkedHashSet::new);
+    }
+    
     public static <K, V> TupleMapper<Map<K, Optional<Object>>> tupleAttributeMapper(Function<TupleElement<?>, K> tupleMapKeyMapper)
     {
         return
