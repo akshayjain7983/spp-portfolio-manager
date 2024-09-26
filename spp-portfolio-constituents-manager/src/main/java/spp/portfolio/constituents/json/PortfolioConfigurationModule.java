@@ -10,9 +10,9 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
-import spp.portfolio.constituents.rules.inmemory.BooleanOperator;
-import spp.portfolio.constituents.rules.inmemory.ComparisonOperator;
-import spp.portfolio.constituents.rules.inmemory.Currency;
+import spp.portfolio.constituents.rules.BooleanOperator;
+import spp.portfolio.constituents.rules.Currency;
+import spp.portfolio.constituents.rules.simple.ComparisonOperator;
 
 public class PortfolioConfigurationModule extends SimpleModule
 {

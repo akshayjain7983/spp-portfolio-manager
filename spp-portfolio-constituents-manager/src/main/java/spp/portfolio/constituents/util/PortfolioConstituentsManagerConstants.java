@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
@@ -27,12 +28,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import spp.portfolio.configuration.expose.PortfolioConfigurationManager;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
-import spp.portfolio.constituents.rules.Security;
-import spp.portfolio.constituents.rules.SecurityType;
-import spp.portfolio.constituents.rules.inmemory.LoopPortfolioRule;
-import spp.portfolio.constituents.rules.inmemory.PortfolioConfiguration;
-import spp.portfolio.constituents.rules.inmemory.dao.PortfolioRebalanceRepository;
-import spp.portfolio.constituents.rules.inmemory.dao.SecurityDataDao;
+import spp.portfolio.constituents.rules.RelaxationCondition;
+import spp.portfolio.constituents.rules.simple.LoopPortfolioRule;
+import spp.portfolio.constituents.rules.simple.PortfolioConfiguration;
+import spp.portfolio.constituents.rules.simple.Security;
+import spp.portfolio.constituents.rules.simple.SecurityType;
+import spp.portfolio.constituents.rules.simple.dao.PortfolioRebalanceRepository;
+import spp.portfolio.constituents.rules.simple.dao.SecurityDataDao;
 import spp.portfolio.manager.utilities.spring.SpringContextHolder;
 import spp.portfolio.model.definition.PortfolioDefinition;
 import spp.portfolio.model.definition.PortfolioDefinitionConfiguration;
@@ -54,6 +56,8 @@ public class PortfolioConstituentsManagerConstants
     public static final Key<Collection<PortfolioRebalanceTransaction>> portfolioRebalanceTransactionsKey = Key.of("portfolioRebalanceTransactions", KeyType.<Collection<PortfolioRebalanceTransaction>>of(Collection.class));
     public static final Key<PortfolioRebalance> portfolioRebalanceLastKey = Key.of("portfolioRebalanceLast", KeyType.<PortfolioRebalance>of(PortfolioRebalance.class));
     public static final Key<BigDecimal> portfolioSizeCurrentKey = Key.of("portfolioSizeCurrent", KeyType.<BigDecimal>of(BigDecimal.class));
+    public static final Key<AtomicBoolean> isWeightCappingRun = Key.of("isWeightCappingRun", KeyType.<AtomicBoolean>of(AtomicBoolean.class));
+    public static final Key<RelaxationCondition> relaxationCondition = Key.of("relaxationCondition", KeyType.<RelaxationCondition>of(RelaxationCondition.class));
     
     public static final int bigDecimalScale = 64;
     
@@ -69,6 +73,8 @@ public class PortfolioConstituentsManagerConstants
     public static final Supplier<PortfolioRebalanceRepository> portfolioRebalanceRepositorySupplier = () -> SpringContextHolder.getBean(PortfolioRebalanceRepository.class);
     public static final Supplier<HolidayRepository> holidayRepositorySupplier = () -> SpringContextHolder.getBean(HolidayRepository.class);
     public static final Supplier<PortfolioConfigurationManager> portfolioConfigurationManagerSupplier = () -> SpringContextHolder.getBean(PortfolioConfigurationManager.class);
+    public static final BiFunction<String, ConcurrentApplicationContext, Boolean> isLoopContinueNextIteration = (loopLabel, context) -> Optional.ofNullable(context.fetch(loopRuleStatesKey).peek()).filter(ls->StringUtils.equalsIgnoreCase(loopLabel, ls.loopLabel())).map(ls->ls.continueNextIteration().get()).orElse(Boolean.FALSE);
+    public static final Consumer<ConcurrentApplicationContext> continueLoop = context -> Optional.of(isInsideALoop.apply(context)).filter(Boolean::booleanValue).ifPresent(b->context.fetch(loopRuleStatesKey).peek().continueNextIteration().set(true));
     
     public static final BiFunction<Map<String, Collection<String>>, LocalDate, Boolean> isHolidayForAnyExchange =
             (exchangesWithSecurityTypes, date) -> {

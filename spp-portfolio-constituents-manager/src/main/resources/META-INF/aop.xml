@@ -1,7 +1,7 @@
 <aspectj>
 
 	<weaver options="-verbose -showWeaveInfo">
-		<include within="spp.portfolio.constituents.rules.inmemory..*"/>
+		<include within="spp.portfolio.constituents.rules.simple..*"/>
 		<include within="spp.portfolio.constituents.log..*"/>
 	</weaver>
 

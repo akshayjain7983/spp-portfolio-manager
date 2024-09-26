@@ -17,8 +17,8 @@ import spp.portfolio.constituents.json.PortfolioConfigurationModule;
 import spp.portfolio.constituents.rebalance.CompositePortfolioRebalanceStage;
 import spp.portfolio.constituents.stage.PortfolioRebalanceContextCleanupStage;
 import spp.portfolio.constituents.stage.PortfolioRebalancePersistStage;
-import spp.portfolio.constituents.stage.inmemory.PortfolioRebalanceConstituentBuilderStage;
-import spp.portfolio.constituents.stage.inmemory.PortfolioRebalanceContextSetupStage;
+import spp.portfolio.constituents.stage.simple.PortfolioRebalanceConstituentBuilderStage;
+import spp.portfolio.constituents.stage.simple.PortfolioRebalanceContextSetupStage;
 import spp.portfolio.constituents.util.SqlFiles;
 
 @Configuration

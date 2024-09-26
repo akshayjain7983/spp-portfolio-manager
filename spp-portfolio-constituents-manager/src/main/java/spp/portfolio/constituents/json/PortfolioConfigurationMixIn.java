@@ -7,8 +7,8 @@ import org.springframework.boot.jackson.JsonMixin;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import spp.portfolio.constituents.rules.inmemory.Currency;
-import spp.portfolio.constituents.rules.inmemory.PortfolioConfiguration;
+import spp.portfolio.constituents.rules.Currency;
+import spp.portfolio.constituents.rules.simple.PortfolioConfiguration;
 
 @JsonMixin(PortfolioConfiguration.class)
 public abstract class PortfolioConfigurationMixIn

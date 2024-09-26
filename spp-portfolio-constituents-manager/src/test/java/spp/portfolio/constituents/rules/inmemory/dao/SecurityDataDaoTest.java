@@ -21,8 +21,9 @@ import io.github.funofprograming.context.ConcurrentApplicationContext;
 import io.github.funofprograming.context.Key;
 import io.github.funofprograming.context.KeyType;
 import io.github.funofprograming.context.impl.ConcurrentApplicationContextImpl;
-import spp.portfolio.constituents.rules.Security;
-import spp.portfolio.constituents.rules.SecurityType;
+import spp.portfolio.constituents.rules.simple.Security;
+import spp.portfolio.constituents.rules.simple.SecurityType;
+import spp.portfolio.constituents.rules.simple.dao.SecurityDataDao;
 import spp.portfolio.constituents.util.SqlFiles;
 
 @DataJpaTest

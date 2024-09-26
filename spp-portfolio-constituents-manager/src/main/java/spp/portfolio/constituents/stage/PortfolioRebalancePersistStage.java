@@ -12,7 +12,7 @@ import io.github.funofprograming.context.ConcurrentApplicationContext;
 import jakarta.transaction.Transactional;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceStage;
-import spp.portfolio.constituents.rules.inmemory.dao.PortfolioRebalanceRepository;
+import spp.portfolio.constituents.rules.simple.dao.PortfolioRebalanceRepository;
 import spp.portfolio.model.rebalance.PortfolioRebalance;
 
 public class PortfolioRebalancePersistStage implements PortfolioRebalanceStage

@@ -9,16 +9,14 @@ import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.stereotype.Component;
 
 import io.github.funofprograming.context.ConcurrentApplicationContext;
-import spp.portfolio.constituents.rules.inmemory.PortfolioRule;
+import spp.portfolio.constituents.rules.simple.PortfolioRule;
 
-//@Component
 @Aspect
 public class PortfolioRuleLogAspect
 {
-    @Pointcut("execution(* spp.portfolio.constituents.rules.inmemory.PortfolioRule.execute(..))")
+    @Pointcut("execution(* spp.portfolio.constituents.rules.simple.PortfolioRule.execute(..))")
     public void portfolioRuleExecute() {}
     
     @Before("portfolioRuleExecute() && target(portfolioRule) && args(securitiesIn, context,..)")

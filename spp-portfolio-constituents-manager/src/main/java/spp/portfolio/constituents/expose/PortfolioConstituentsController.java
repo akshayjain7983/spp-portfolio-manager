@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceExecutor;
-import spp.portfolio.constituents.rules.inmemory.dao.PortfolioRebalanceRepository;
+import spp.portfolio.constituents.rules.simple.dao.PortfolioRebalanceRepository;
 import spp.portfolio.model.definition.PortfolioDefinition;
 import spp.portfolio.model.definition.PortfolioDefinitionConfiguration;
 import spp.portfolio.model.definition.configuration.rules.SecurityType;

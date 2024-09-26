@@ -22,7 +22,7 @@ import spp.portfolio.configuration.expose.PortfolioConfigurationController;
 import spp.portfolio.constituents.rebalance.DefaultPortfolioRebalanceExecutor;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceExecutor;
-import spp.portfolio.constituents.rules.inmemory.dao.SecurityDataDao;
+import spp.portfolio.constituents.rules.simple.dao.SecurityDataDao;
 import spp.portfolio.constituents.spring.PortfolioConstituentsSpringConfiguration;
 import spp.portfolio.manager.utilities.spring.SpringContextHolder;
 import spp.portfolio.model.rebalance.PortfolioRebalance;

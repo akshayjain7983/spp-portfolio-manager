@@ -1,10 +1,14 @@
-package spp.portfolio.model.definition.configuration.rules;
+package spp.portfolio.constituents.rules.simple;
+
+import java.util.Collection;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+
+import io.github.funofprograming.context.ConcurrentApplicationContext;
 
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "type")
 @JsonSubTypes({
@@ -17,8 +21,14 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
     @Type(name = "PortfolioTrasactionsRule", value = PortfolioTrasactionsRule.class),
     @Type(name = "RankingRule", value = RankingRule.class),
     @Type(name = "MaxSecuritiesCountRule", value = MaxSecuritiesCountRule.class),
-    @Type(name = "MinSecuritiesCountRule", value = MinSecuritiesCountRule.class)
+    @Type(name = "MinSecuritiesCountRule", value = MinSecuritiesCountRule.class) 
 })
 public interface PortfolioRule
 {
+    default boolean doExecute(ConcurrentApplicationContext context)
+    {
+        return true;
+    }
+    
+    Collection<Security> execute(Collection<Security> securities, ConcurrentApplicationContext context);
 }
