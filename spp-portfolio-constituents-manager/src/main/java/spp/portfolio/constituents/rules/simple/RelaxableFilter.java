@@ -16,28 +16,21 @@ public abstract class RelaxableFilter implements Filter
     @Override
     public Optional<Security> execute(Optional<Security> security, ConcurrentApplicationContext context)
     {
-	Optional<Security> filteredSecurity = security;
-	Filter relaxedFilter = getRelaxedFilter(context);
-	
-	if(Objects.nonNull(relaxedFilter))
-	    filteredSecurity = relaxedFilter.execute(filteredSecurity, context);
-	else 
-	    filteredSecurity = executeFilter(filteredSecurity, context);
-	
+	Optional<Filter> relaxedFilter = getRelaxedFilter(context);
+	Optional<Security> filteredSecurity = relaxedFilter.map(rf->rf.execute(security, context)).orElseGet(()->executeFilter(security, context));
 	return filteredSecurity;
     }
     
     protected abstract Optional<Security> executeFilter(Optional<Security> security, ConcurrentApplicationContext context);
 
-    protected Filter getRelaxedFilter(ConcurrentApplicationContext context)
+    protected Optional<Filter> getRelaxedFilter(ConcurrentApplicationContext context)
     {
 	RelaxationCondition relaxationConditionApplied = context.fetch(relaxationCondition);
 	
 	if(Objects.isNull(relaxationConditionApplied))
-	    return null;
+	    return Optional.empty();
 	
 	return Optional.ofNullable(relaxedFilters)
-			.map(rf->rf.get(relaxationConditionApplied))
-			.orElse(null);
+			.map(rf->rf.get(relaxationConditionApplied));
     }
 }

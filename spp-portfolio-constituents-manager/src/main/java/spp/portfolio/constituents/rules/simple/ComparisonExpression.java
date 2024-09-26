@@ -1,6 +1,6 @@
 package spp.portfolio.constituents.rules.simple;
 
-import static spp.portfolio.manager.utilities.json.JsonUtil.fromJson;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.parseAttribute;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -35,30 +35,16 @@ public class ComparisonExpression implements Expression<Boolean>
         if(security.isEmpty())
             return Boolean.FALSE;
         
-        Object leftSideObject = parseAttribute(leftSide, security);
+        Object leftSideObject = parseAttribute.apply(leftSide, security);
         if(Objects.isNull(leftSideObject))
             return Boolean.FALSE;
         
         
-        Object rightSideObject = parseAttribute(rightSide, security);
+        Object rightSideObject = parseAttribute.apply(rightSide, security);
         if(Objects.isNull(rightSideObject))
             return Boolean.FALSE;
         
         return compare(leftSideObject, rightSideObject);
-    }
-    
-    private Object parseAttribute(Attribute<?> attribute, Optional<Security> security)
-    {
-        Class<?> attributeType = attribute.getType();
-        String literalValue = attribute.getLiteralValue();
-        if(Objects.nonNull(literalValue))
-        {
-            return fromJson(literalValue, attributeType);
-        }
-        else 
-        {
-            return security.flatMap(s->s.getAttributeValue(attribute.getName(), attributeType)).orElse(null);
-        }
     }
 
     private Boolean compare(Object leftSideObject, Object rightSideObject)
@@ -72,13 +58,13 @@ public class ComparisonExpression implements Expression<Boolean>
             case LocalDate t->
             {
                 ZonedDateTime leftSide = ZonedDateTime.of((LocalDate)leftSideObject, LocalTime.MIDNIGHT, ZoneOffset.UTC);
-                ZonedDateTime rightSide = ZonedDateTime.of((LocalDate)leftSideObject, LocalTime.MIDNIGHT, ZoneOffset.UTC);
+                ZonedDateTime rightSide = ZonedDateTime.of((LocalDate)rightSideObject, LocalTime.MIDNIGHT, ZoneOffset.UTC);
                 return compareZonedDateTimes(leftSide, rightSide);
             }
             case LocalDateTime t->
             {
                 ZonedDateTime leftSide = ZonedDateTime.of((LocalDateTime)leftSideObject, ZoneOffset.UTC);
-                ZonedDateTime rightSide = ZonedDateTime.of((LocalDateTime)leftSideObject, ZoneOffset.UTC);
+                ZonedDateTime rightSide = ZonedDateTime.of((LocalDateTime)rightSideObject, ZoneOffset.UTC);
                 return compareZonedDateTimes(leftSide, rightSide);
             }
             case ZonedDateTime t->
@@ -88,7 +74,7 @@ public class ComparisonExpression implements Expression<Boolean>
             case Instant t -> 
             {
                 ZonedDateTime leftSide = ZonedDateTime.ofInstant((Instant)leftSideObject, ZoneOffset.UTC);
-                ZonedDateTime rightSide = ZonedDateTime.ofInstant((Instant)leftSideObject, ZoneOffset.UTC);
+                ZonedDateTime rightSide = ZonedDateTime.ofInstant((Instant)rightSideObject, ZoneOffset.UTC);
                 return compareZonedDateTimes(leftSide, rightSide);
             }
             case Number n->

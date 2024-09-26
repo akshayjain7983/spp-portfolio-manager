@@ -6,13 +6,17 @@ import static spp.portfolio.manager.utilities.json.JsonSerializationBuilders.bui
 import java.util.Objects;
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
+import spp.portfolio.manager.utilities.json.JsonSerializationBuilders;
 import spp.portfolio.model.definition.configuration.Currency;
 import spp.portfolio.model.definition.configuration.rules.BooleanOperator;
 import spp.portfolio.model.definition.configuration.rules.ComparisonOperator;
+import spp.portfolio.model.definition.configuration.rules.ExistOperator;
+import spp.portfolio.model.definition.configuration.rules.RelaxationCondition;
 
 public class PortfolioConfigurationModule extends SimpleModule
 {
@@ -27,6 +31,11 @@ public class PortfolioConfigurationModule extends SimpleModule
         addDeserializer(ComparisonOperator.class, getComparisonOperatorDeserializer());
         addSerializer(BooleanOperator.class, getBooleanOperatorSerializer());
         addDeserializer(BooleanOperator.class, getBooleanOperatorDeserializer());
+        addKeySerializer(RelaxationCondition.class, getRelaxationConditionSerializer());
+        addKeyDeserializer(RelaxationCondition.class, getRelaxationConditionKeyDeserializer());
+        addSerializer(ExistOperator.class, getExistOperatorSerializer());
+        addDeserializer(ExistOperator.class, getExistOperatorDeserializer());
+        
     }
     
     public static StdSerializer<Currency> getCurrencySerializer() 
@@ -72,5 +81,41 @@ public class PortfolioConfigurationModule extends SimpleModule
     {
         return buildJsonDeserializer(BooleanOperator.class
                                                     , (p, ctxt)->Optional.ofNullable(p.getValueAsString()).map(s->BooleanOperator.getFromSymbol(s)).orElseThrow());
+    }
+    
+    public static StdSerializer<RelaxationCondition> getRelaxationConditionSerializer() 
+    {
+        return buildJsonSerializer(RelaxationCondition.class
+                                                , (value, gen, serializers)->{
+                                                    if(Objects.nonNull(value))
+                                                        gen.writeString(value.name());
+                                                });
+    }
+    
+    public static StdDeserializer<RelaxationCondition> getRelaxationConditionDeserializer() 
+    {
+        return buildJsonDeserializer(RelaxationCondition.class
+                                                    , (p, ctxt)->Optional.ofNullable(p.getValueAsString()).map(s->RelaxationCondition.valueOf(s)).orElseThrow());
+    }
+    
+    public static KeyDeserializer getRelaxationConditionKeyDeserializer()
+    {
+	return JsonSerializationBuilders.buildJsonMapKeyDeserializer(RelaxationCondition.class
+													, (k, ctx)->Optional.ofNullable(k).map(s->RelaxationCondition.valueOf(s)).orElseThrow());
+    }
+    
+    public static StdSerializer<ExistOperator> getExistOperatorSerializer() 
+    {
+        return buildJsonSerializer(ExistOperator.class
+                                                , (value, gen, serializers)->{
+                                                    if(Objects.nonNull(value))
+                                                        gen.writeString(value.getSymbol());
+                                                });
+    }
+    
+    public static StdDeserializer<ExistOperator> getExistOperatorDeserializer() 
+    {
+        return buildJsonDeserializer(ExistOperator.class
+                                                    , (p, ctxt)->Optional.ofNullable(p.getValueAsString()).map(s->ExistOperator.getFromSymbol(s)).orElseThrow());
     }
 }

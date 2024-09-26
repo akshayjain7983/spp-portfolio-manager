@@ -1,5 +1,7 @@
 package spp.portfolio.constituents.util;
 
+import static spp.portfolio.manager.utilities.json.JsonUtil.fromJson;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -28,6 +30,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import spp.portfolio.configuration.expose.PortfolioConfigurationManager;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
+import spp.portfolio.constituents.rules.Attribute;
 import spp.portfolio.constituents.rules.RelaxationCondition;
 import spp.portfolio.constituents.rules.simple.LoopPortfolioRule;
 import spp.portfolio.constituents.rules.simple.PortfolioConfiguration;
@@ -120,4 +123,18 @@ public class PortfolioConstituentsManagerConstants
                       .findFirst()
                       .orElseThrow(()->new SppException("Portfolio definition does not have valid configuration for rebalance date"));
           };
+          
+     public static final BiFunction<Attribute<?>, Optional<Security>, Object> parseAttribute = 
+	     (attribute, security)->{
+		 Class<?> attributeType = attribute.getType();
+		 String literalValue = attribute.getLiteralValue();
+		 if(Objects.nonNull(literalValue))
+		 {
+		     return fromJson(literalValue, attributeType);
+		 }
+		 else 
+		 {
+		     return security.flatMap(s->s.getAttributeValue(attribute.getName(), attributeType)).orElse(null);
+		 } 
+	     };
 }

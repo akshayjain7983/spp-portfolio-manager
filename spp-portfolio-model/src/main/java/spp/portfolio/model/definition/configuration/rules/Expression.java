@@ -8,7 +8,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "type")
 @JsonSubTypes({
-    @Type(name = "ComparisonExpression", value = ComparisonExpression.class)
+    @Type(name = "ComparisonExpression", value = ComparisonExpression.class),
+    @Type(name = "ExistExpression", value = ExistExpression.class)    
 })
 public interface Expression
 {

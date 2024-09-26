@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import lombok.AccessLevel;
@@ -26,6 +27,12 @@ public class JsonSerializationBuilders
     public static interface JsonDeserializerOperation<T>
     {
         public T apply(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException;
+    }
+    
+    @FunctionalInterface
+    public static interface JsonMapKeyDeserializerOperation<T>
+    {
+        public T apply(String Key, DeserializationContext ctxt) throws IOException, JacksonException;
     }
 
     @SuppressWarnings("serial")
@@ -52,6 +59,20 @@ public class JsonSerializationBuilders
                     public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException
                     {
                         return jsonDeserializerOperation.apply(p, ctxt);
+                    }
+                };
+    }
+    
+    @SuppressWarnings("serial")
+    public static <T> StdKeyDeserializer buildJsonMapKeyDeserializer(final Class<T> handledType, final JsonMapKeyDeserializerOperation<T> jsonMapKeyDeserializerOperation) 
+    {
+        return
+                new StdKeyDeserializer(-1, handledType)
+                {
+                    @Override
+                    public T deserializeKey(String k, DeserializationContext ctxt) throws IOException, JacksonException
+                    {
+                        return jsonMapKeyDeserializerOperation.apply(k, ctxt);
                     }
                 };
     }
