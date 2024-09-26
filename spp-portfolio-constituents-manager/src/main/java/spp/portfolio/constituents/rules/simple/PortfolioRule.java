@@ -21,7 +21,8 @@ import io.github.funofprograming.context.ConcurrentApplicationContext;
     @Type(name = "PortfolioTrasactionsRule", value = PortfolioTrasactionsRule.class),
     @Type(name = "RankingRule", value = RankingRule.class),
     @Type(name = "MaxSecuritiesCountRule", value = MaxSecuritiesCountRule.class),
-    @Type(name = "MinSecuritiesCountRule", value = MinSecuritiesCountRule.class) 
+    @Type(name = "MinSecuritiesCountRule", value = MinSecuritiesCountRule.class),
+    @Type(name = "MinRunRule", value = MinRunRule.class) 
 })
 public interface PortfolioRule
 {

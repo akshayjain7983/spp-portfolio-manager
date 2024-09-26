@@ -1,14 +1,11 @@
 package spp.portfolio.constituents.rules.simple;
 
-import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.findPreviousBusinessDate;
-import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioConfigurationKey;
-import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioDefinitionConfigurationKey;
-import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceCommandKey;
-import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceRepositorySupplier;
-import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.*;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceKey;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceLastKey;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceTransactionsKey;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.securitiesUniverseKey;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,34 +14,22 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import io.github.funofprograming.context.ConcurrentApplicationContext;
-import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
-import spp.portfolio.constituents.rules.simple.dao.PortfolioRebalanceRepository;
-import spp.portfolio.model.definition.PortfolioDefinition;
 import spp.portfolio.model.rebalance.PortfolioConstituent;
 import spp.portfolio.model.rebalance.PortfolioRebalance;
 import spp.portfolio.model.rebalance.PortfolioRebalanceTransaction;
 import spp.portfolio.model.rebalance.PortfolioRebalanceTransactionType;
-import spp.portfolio.model.rebalance.PortfolioRebalanceType;
 
 public class PortfolioTrasactionsRule implements PortfolioRule
 {
-
     @Override
     public Collection<Security> execute(Collection<Security> securities, ConcurrentApplicationContext context)
     {
-        PortfolioRebalanceCommand command = context.fetch(portfolioRebalanceCommandKey);
-        PortfolioConfiguration portfolioConfiguration = context.fetch(portfolioConfigurationKey);
-        PortfolioRebalanceRepository portfolioRebalanceRepository = portfolioRebalanceRepositorySupplier.get();
-        PortfolioDefinition portfolioDefinition = context.fetch(portfolioDefinitionConfigurationKey).getPortfolioDefinition();
-        PortfolioRebalanceType portfolioRebalanceType = command.getPortfolioRebalanceType();
-        LocalDate rebalanceDate = command.getDate();
-        LocalDate previousBusinessDate = findPreviousBusinessDate.apply(portfolioConfiguration.getExchangesWithSecurityTypes(), rebalanceDate);
-        Optional<PortfolioRebalance> portfolioRebalancePreviousBusinessDate = portfolioRebalanceRepository.findByPortfolioDefinitionAndDateAndRebalanceTypeAndIsActive(portfolioDefinition, previousBusinessDate, portfolioRebalanceType, Boolean.TRUE);
-        setupPortfolioTrasactions(securities, context, portfolioRebalancePreviousBusinessDate);
+        Optional<PortfolioRebalance> portfolioRebalancePrevious = Optional.ofNullable(context.fetch(portfolioRebalanceLastKey));
+        setupPortfolioTrasactions(securities, context, portfolioRebalancePrevious);
         return securities;
     }
 
-    private void setupPortfolioTrasactions(Collection<Security> securities, ConcurrentApplicationContext context, Optional<PortfolioRebalance> portfolioRebalancePreviousBusinessDate)
+    private void setupPortfolioTrasactions(Collection<Security> securities, ConcurrentApplicationContext context, Optional<PortfolioRebalance> portfolioRebalancePrevious)
     {
         Collection<PortfolioRebalanceTransaction> portfolioRebalanceTransactions = new ArrayList<>();
         PortfolioRebalance portfolioRebalance = context.fetch(portfolioRebalanceKey);
@@ -55,8 +40,8 @@ public class PortfolioTrasactionsRule implements PortfolioRule
                 .stream()
                 .collect(Collectors.toMap(Security::getSecurityId, s->s.getAttributeValue("rebalance_price", BigDecimal.class).or(()->s.getAttributeValue("close_price", BigDecimal.class)).orElse(BigDecimal.ZERO)));
         
-        Map<Long, Long> portfolioConstituentUnitsPreviousBusinessDate = 
-                portfolioRebalancePreviousBusinessDate
+        Map<Long, Long> portfolioConstituentUnitsPrevious = 
+                portfolioRebalancePrevious
                 .map(PortfolioRebalance::getPortfolioConstituents)
                 .orElse(Collections.emptyList())
                 .stream()
@@ -72,7 +57,7 @@ public class PortfolioTrasactionsRule implements PortfolioRule
         for(Long securityId:portfolioConstituentUnitsRebalanceDate.keySet())
         {
             Long unitsRebalanceDate = portfolioConstituentUnitsRebalanceDate.get(securityId);
-            Long unitsPreviousRebalanceDate = portfolioConstituentUnitsPreviousBusinessDate.get(securityId);
+            Long unitsPreviousRebalanceDate = portfolioConstituentUnitsPrevious.get(securityId);
             Long difference = unitsRebalanceDate - Optional.ofNullable(unitsPreviousRebalanceDate).orElse(0L);
             
             if(difference == 0L)
@@ -92,11 +77,11 @@ public class PortfolioTrasactionsRule implements PortfolioRule
         }
         
         //old that do not exist in new must be sell transaction
-        for(Long securityId:portfolioConstituentUnitsPreviousBusinessDate.keySet())
+        for(Long securityId:portfolioConstituentUnitsPrevious.keySet())
         {
             if(!portfolioConstituentUnitsRebalanceDate.containsKey(securityId))
             {
-                Long unitsPreviousRebalanceDate = portfolioConstituentUnitsPreviousBusinessDate.get(securityId);
+                Long unitsPreviousRebalanceDate = portfolioConstituentUnitsPrevious.get(securityId);
                 PortfolioRebalanceTransactionType transactionType = PortfolioRebalanceTransactionType.SELL;
                 BigDecimal transactionPrice = securitiesUniversePriceRebalanceDate.get(securityId);
                 PortfolioRebalanceTransaction transaction = PortfolioRebalanceTransaction.builder()

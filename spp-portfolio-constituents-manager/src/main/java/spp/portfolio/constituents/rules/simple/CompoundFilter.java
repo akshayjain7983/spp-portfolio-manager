@@ -17,7 +17,7 @@ public class CompoundFilter extends RelaxableFilter
     private List<Filter> filters;
     
     @Override
-    protected Optional<Security> executeFilter(Optional<Security> security, ConcurrentApplicationContext context)
+    protected Optional<Security> executeNormalFilter(Optional<Security> security, ConcurrentApplicationContext context)
     {
         Optional<Security> filteredSecurity = security;
         List<Boolean> results = new ArrayList<>();

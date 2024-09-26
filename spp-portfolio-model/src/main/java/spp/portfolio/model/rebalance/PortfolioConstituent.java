@@ -1,6 +1,7 @@
 package spp.portfolio.model.rebalance;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -45,4 +46,5 @@ public class PortfolioConstituent
     private Long units;
     private BigDecimal investmentMarketValue;
     private BigDecimal weight;
+    private LocalDate inPortfolioSince;
 }

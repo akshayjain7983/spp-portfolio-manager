@@ -8,6 +8,7 @@ import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConsta
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.rebalanceContextNameBuilder;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,6 +48,7 @@ public class PortfolioRebalanceConstituentBuilderStage implements PortfolioRebal
                             .units(c.getAttributeValue("rebalance_units", Long.class).orElse(null))
                             .investmentMarketValue(c.getAttributeValue("market_value", BigDecimal.class).orElse(null))
                             .weight(c.getAttributeValue("rebalance_weight", BigDecimal.class).orElse(null))
+                            .inPortfolioSince(c.getAttributeValue("min_run_locked_since", LocalDate.class).orElse(portfolioRebalance.getDate()))
                             .build();
                 })
                 .collect(Collectors.toList());

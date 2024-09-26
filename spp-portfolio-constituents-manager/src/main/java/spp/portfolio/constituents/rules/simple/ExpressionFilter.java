@@ -15,7 +15,7 @@ public class ExpressionFilter extends RelaxableFilter
     private Expression<?> expression;
 
     @Override
-    protected Optional<Security> executeFilter(Optional<Security> security, ConcurrentApplicationContext context)
+    protected Optional<Security> executeNormalFilter(Optional<Security> security, ConcurrentApplicationContext context)
     {
         Class<?> expressionResultType = expression.resultType();
         Optional<Security> result = Optional.empty();

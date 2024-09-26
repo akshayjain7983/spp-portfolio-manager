@@ -45,9 +45,13 @@ public class MarketValueSecurityWeightCapper implements SecurityWeightCapper
                     BigDecimal groupPortfolioAmountLimit = portfolioSizeCurrent.multiply(groupWeightCap);
                     Map<Long, BigDecimal> cappedDistributionMarketValue = weightCappingStrategy.capWeights(existingDistributionMarketValue, groupPortfolioAmountLimit);
                     groupedSecurities.stream().forEach(s->{
-                        Optional<BigDecimal> cappedMv = Optional.ofNullable(cappedDistributionMarketValue.get(s.getSecurityId()));
+                	
+                	//check if min run locked
+                	Optional<Long> minRunLockedRebalanceUnits = s.getAttributeValue("min_run_locked_rebalance_units", Long.class).or(()->Optional.ofNullable(0L));
+                	Optional<BigDecimal> cappedMv = Optional.ofNullable(cappedDistributionMarketValue.get(s.getSecurityId()));
                         Optional<BigDecimal> rebalancePrice = s.getAttributeValue("rebalance_price", BigDecimal.class);
-                        Optional<Long> rebalanceUnits = cappedMv.flatMap(cmv->rebalancePrice.map(p->safeDivide.apply(cmv, p).longValue()));
+                        Optional<Long> rebalanceUnitsCurrent = cappedMv.flatMap(cmv->rebalancePrice.map(p->safeDivide.apply(cmv, p).longValue()));
+                        Optional<Long> rebalanceUnits = rebalanceUnitsCurrent.flatMap(ru->minRunLockedRebalanceUnits.filter(mrlru->mrlru>ru).or(()->Optional.ofNullable(ru))); //current rebalance units cannot be less than min run locked units
                         s.setAttributeValue("rebalance_units", rebalanceUnits);
                     });
                 }
