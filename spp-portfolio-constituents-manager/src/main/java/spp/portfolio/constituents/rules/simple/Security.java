@@ -11,4 +11,6 @@ public interface Security
     <T> Optional<T> getAttributeValue(String attributeKey, Class<T> attributeType);
     
     <T> void setAttributeValue(String attributeKey, Optional<T> attributeValue);
+    
+    <T> Optional<T> removeAttributeValue(String attributeKey, Class<T> attributeType);
 }

@@ -35,4 +35,13 @@ public class SecurityImpl implements Security
         Optional<Object> value = attributeValue.map(v->(Object)v);
         attributes.put(Attribute.ofName(attributeKey, type), value);
     }
+
+    @Override
+    public <T> Optional<T> removeAttributeValue(String attributeKey, Class<T> attributeType)
+    {
+	Objects.requireNonNull(attributeKey, "attributeKey missing");
+        Objects.requireNonNull(attributeType, "attributeType missing");
+        Optional<Object> val = attributes.remove(Attribute.ofName(attributeKey, null));
+        return Optional.ofNullable(val).flatMap(v->v.map(l->JsonUtil.viaJson(l, attributeType)));
+    }
 }

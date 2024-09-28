@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -17,10 +18,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ContextConfiguration;
 
-import io.github.funofprograming.context.ConcurrentApplicationContext;
+import io.github.funofprograming.context.ApplicationContext;
 import io.github.funofprograming.context.Key;
 import io.github.funofprograming.context.KeyType;
-import io.github.funofprograming.context.impl.ConcurrentApplicationContextImpl;
+import io.github.funofprograming.context.impl.ApplicationContextImpl;
 import spp.portfolio.constituents.rules.simple.Security;
 import spp.portfolio.constituents.rules.simple.SecurityType;
 import spp.portfolio.constituents.rules.simple.dao.SecurityDataDao;
@@ -45,10 +46,10 @@ class SecurityDataDaoTest
     @Test
     void testLoadSecuritiesAll()
     {
-        ConcurrentApplicationContext context = new ConcurrentApplicationContextImpl("SecurityDataDaoTest");
-        context.add(Key.of("rebalanceDate", LocalDate.class), LocalDate.now());
-        context.add(Key.of("securityType", KeyType.<Collection<SecurityType>>of(Set.class)), Set.of(SecurityType.EQUITY));
-        context.add(Key.of("exchange", KeyType.<Collection<String>>of(Set.class)), Set.of("BSE"));
+        ApplicationContext context = new ApplicationContextImpl("SecurityDataDaoTest");
+        Map<String, Collection<SecurityType>> exchangesWithSecurityTypes = Map.of("BSE", Set.of(SecurityType.EQUITY));
+        context.add(Key.of("rebalanceDate", LocalDate.class), LocalDate.of(2018, 11, 1));
+        context.add(Key.of("exchangesWithSecurityTypes", KeyType.<Map<String, Collection<SecurityType>>>of(Map.class)), exchangesWithSecurityTypes);
         Collection<Security> securities = securityDataDao.loadSecurities(context);
         assertFalse(securities.isEmpty());
         assertNotEquals(securities.size(), 0);

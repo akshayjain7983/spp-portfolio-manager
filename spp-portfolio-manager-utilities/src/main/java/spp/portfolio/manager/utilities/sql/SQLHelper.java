@@ -36,6 +36,7 @@ public class SQLHelper
     public static final String TABLE_PLACEHOLDER = "[TABLE[?]]";
     public static final String DATABASE_PLACEHOLDER = "[DB[?]]";
     public static final String JOIN_PLACEHOLDER = "[JOIN[?]]";
+    public static final String SQL_PLACEHOLDER = "[SQL[?]]";
 
     public static Map<Class<?>, Integer> sqlTypesForJavaClasses = new HashMap<>();
 
@@ -83,6 +84,12 @@ public class SQLHelper
     {
 
         return sql.replaceFirst(Pattern.quote(DATABASE_PLACEHOLDER), Matcher.quoteReplacement(dbName));
+    }
+
+    public static String replaceSQLString(String sql, String dbName)
+    {
+
+        return sql.replaceFirst(Pattern.quote(SQL_PLACEHOLDER), Matcher.quoteReplacement(dbName));
     }
 
     public static String replaceInClauseString(String sql, Collection<String> listOfValues)

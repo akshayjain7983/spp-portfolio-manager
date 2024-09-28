@@ -58,8 +58,40 @@ AND
 e."name" = :exchange
 
 {loadForecastPScore}
-SELECT security_id,  "date", forecast_period, forecasted_p_score 
-FROM spp.forecast_p_score fps 
-WHERE security_id IN :securityIds
-AND "date" BETWEEN :rebalanceDate::date - 30 AND :rebalanceDate
-AND is_active = True
+SELECT * FROM crosstab('
+			SELECT fsr.security_id, fsr.forecast_period, (''T-'' || CAST((RANK() OVER (PARTITION BY fsr.security_id, es."name" ORDER BY fps."date" DESC)) AS TEXT)) AS T, forecasted_p_score
+			FROM spp.securities s 
+			INNER JOIN spp.exchange_segments es 
+			ON es.status = ''Active''
+			AND s.exchange_segment_id = es.id 
+			INNER JOIN spp.exchanges e 
+			ON es.exchange_id = e.id 
+			INNER JOIN spp.indices i 
+			ON e.id = i.exchange_id
+			AND i.status = ''Active''
+			LEFT OUTER JOIN spp.forecast_security_returns fsr 
+			ON fsr.security_id = s.id 
+			AND fsr.is_active = TRUE 
+			LEFT OUTER JOIN spp.forecast_index_returns fir 
+			ON fir.index_id = i.id 
+			AND fir.is_active = TRUE 
+			LEFT OUTER JOIN spp.forecast_p_score fps 
+			ON fsr.id = fps.forecast_security_returns_id 
+			AND fir.id = fps.forecast_index_returns_id 
+			WHERE e."name" = '''|| :exchange ||'''
+			AND es."name" IN ('|| replace(replace(replace('''' || :segment || '''', ',',''','''), ')''', ''''), '''(', '''') ||')
+			AND s.id IN ('|| replace(replace('' || :securityIds, ')', ''), '(', '') ||')
+			AND fps."date" BETWEEN spp.previous_business_date(e."name", es."name", '''|| :rebalanceDate ||''', ('|| :fpsHistoryDays ||'-1)) AND '''|| :rebalanceDate ||'''
+			AND fsr.forecast_period IN ('|| replace(replace(replace('''' || :forecastPeriod || '''', ',',''','''), ')''', ''''), '''(', '''') ||')
+			ORDER BY fsr.security_id, fps."date" 
+		'
+		, 
+		'
+			SELECT ''T-'' || CAST(t AS TEXT) AS category FROM generate_series(1, '|| :fpsHistoryDays ||') t
+		'
+	)
+	AS (security_id int4, forecast_period TEXT [SQL[?]])
+
+
+
+
