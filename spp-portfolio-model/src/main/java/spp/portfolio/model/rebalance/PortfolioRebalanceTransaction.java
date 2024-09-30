@@ -20,7 +20,7 @@ import lombok.ToString;
 
 @Data
 @Entity
-@Table(catalog = "spp", schema = "spp", name = "portfolio_rebalance_transactions")
+@Table(name = "portfolio_rebalance_transactions")
 @EqualsAndHashCode(of = {"id"})
 @Builder(toBuilder = true)
 @NoArgsConstructor

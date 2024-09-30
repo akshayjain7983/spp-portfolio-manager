@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.env.Environment;
 
 import io.github.funofprograming.context.ConcurrentApplicationContext;
 import io.github.funofprograming.context.Key;
@@ -45,10 +46,12 @@ import spp.portfolio.model.exception.SppException;
 import spp.portfolio.model.marketdata.dao.HolidayRepository;
 import spp.portfolio.model.rebalance.PortfolioRebalance;
 import spp.portfolio.model.rebalance.PortfolioRebalanceTransaction;
+import spp.portfolio.model.spring.configuration.SppPortfolioManagerConfiguration;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PortfolioConstituentsManagerConstants
 {
+    public static final Key<SppPortfolioManagerConfiguration> sppPortfolioManagerConfigurationKey = Key.of("sppPortfolioManagerConfiguration", KeyType.<SppPortfolioManagerConfiguration>of(SppPortfolioManagerConfiguration.class));
     public static final Key<Collection<Security>> securitiesUniverseKey = Key.of("securitiesUniverse", KeyType.<Collection<Security>>of(Collection.class));
     public static final Key<ConcurrentMap<Long, String>> securityOutpointMapKey = Key.of("securityOutpointMap", KeyType.<ConcurrentMap<Long, String>>of(ConcurrentMap.class));
     public static final Key<PortfolioRebalanceCommand> portfolioRebalanceCommandKey = Key.of("portfolioRebalanceCommand", PortfolioRebalanceCommand.class);
@@ -78,6 +81,7 @@ public class PortfolioConstituentsManagerConstants
     public static final Supplier<PortfolioConfigurationManager> portfolioConfigurationManagerSupplier = () -> SpringContextHolder.getBean(PortfolioConfigurationManager.class);
     public static final BiFunction<String, ConcurrentApplicationContext, Boolean> isLoopContinueNextIteration = (loopLabel, context) -> Optional.ofNullable(context.fetch(loopRuleStatesKey).peek()).filter(ls->StringUtils.equalsIgnoreCase(loopLabel, ls.loopLabel())).map(ls->ls.continueNextIteration().get()).orElse(Boolean.FALSE);
     public static final Consumer<ConcurrentApplicationContext> continueLoop = context -> Optional.of(isInsideALoop.apply(context)).filter(Boolean::booleanValue).ifPresent(b->context.fetch(loopRuleStatesKey).peek().continueNextIteration().set(true));
+    public static final Supplier<Environment> environmentSupplier = () -> SpringContextHolder.getEnvironment();
     
     public static final BiFunction<Map<String, Collection<String>>, LocalDate, Boolean> isHolidayForAnyExchange =
             (exchangesWithSecurityTypes, date) -> {

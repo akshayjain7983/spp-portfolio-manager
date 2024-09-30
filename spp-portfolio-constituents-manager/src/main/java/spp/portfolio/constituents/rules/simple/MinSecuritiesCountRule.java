@@ -1,6 +1,8 @@
 package spp.portfolio.constituents.rules.simple;
 
-import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.*;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.continueLoop;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.isInnermostLoopIterationExhausted;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.relaxationCondition;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -8,12 +10,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 import io.github.funofprograming.context.ConcurrentApplicationContext;
+import lombok.Data;
 import spp.portfolio.constituents.rules.RelaxationCondition;
 import spp.portfolio.model.exception.SppException;
 
+@Data
 public class MinSecuritiesCountRule implements PortfolioRule
 {
-    
     private Long minSecuritesCount;
 
     @Override

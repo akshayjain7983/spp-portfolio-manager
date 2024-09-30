@@ -93,7 +93,7 @@ public class PortfolioConstituentsController implements PortfolioConstituentsMan
     @GetMapping("/portfolio-constituents/{runId}")
     public Optional<PortfolioRebalance> getRebalance(@PathVariable UUID runId)
     {
-        Optional<PortfolioRebalance> rebalance = portfolioRebalanceRepository.findByRunIdAndIsActive(runId, Boolean.TRUE);
+        Optional<PortfolioRebalance> rebalance = portfolioRebalanceRepository.findByRunId(runId);
         return sanitizeRebalance(rebalance);
     }
     
@@ -104,7 +104,7 @@ public class PortfolioConstituentsController implements PortfolioConstituentsMan
             , @PathVariable PortfolioRebalanceType portfolioRebalanceType
             , @RequestParam LocalDate rebalanceDate)
     {
-        Optional<PortfolioRebalance> rebalance = portfolioRebalanceRepository.findByPortfolioDefinitionAndDateAndRebalanceTypeAndIsActive(PortfolioDefinition.builder().id(portfolioDefinitionId).build(), rebalanceDate, portfolioRebalanceType, Boolean.TRUE); 
+        Optional<PortfolioRebalance> rebalance = portfolioRebalanceRepository.findByPortfolioDefinitionAndDateAndRebalanceType(PortfolioDefinition.builder().id(portfolioDefinitionId).build(), rebalanceDate, portfolioRebalanceType); 
         return sanitizeRebalance(rebalance);
     }
     

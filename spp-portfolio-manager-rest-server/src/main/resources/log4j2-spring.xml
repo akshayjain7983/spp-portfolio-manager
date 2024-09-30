@@ -2,7 +2,7 @@
 <Configuration status="ERROR" strict="false" monitorInterval="10">
 
 	<properties>
-		<Property name="baseDir">/var/log/spp</Property>
+		<Property name="baseDir">${sys:logfilepath}</Property>
 	</properties>
 
 	<Appenders>

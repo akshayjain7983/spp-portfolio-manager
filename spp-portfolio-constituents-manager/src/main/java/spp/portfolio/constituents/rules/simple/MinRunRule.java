@@ -1,7 +1,9 @@
 package spp.portfolio.constituents.rules.simple;
 
-import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.*;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceCommandKey;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceLastKey;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -11,7 +13,6 @@ import java.util.Optional;
 import io.github.funofprograming.context.ConcurrentApplicationContext;
 import lombok.Data;
 import spp.portfolio.constituents.rebalance.PortfolioRebalanceCommand;
-import spp.portfolio.model.rebalance.PortfolioConstituent;
 import spp.portfolio.model.rebalance.PortfolioRebalance;
 
 /*
@@ -22,6 +23,7 @@ import spp.portfolio.model.rebalance.PortfolioRebalance;
 public class MinRunRule implements PortfolioRule
 {    
     private Long minRunDays;
+    private BigDecimal minRunLockMarketValueRatio;
 
     @Override
     public Collection<Security> execute(Collection<Security> securities, ConcurrentApplicationContext context)
@@ -30,8 +32,8 @@ public class MinRunRule implements PortfolioRule
 	PortfolioRebalanceCommand portfolioRebalanceCommand = context.fetch(portfolioRebalanceCommandKey);
 	LocalDate portfolioRebalanceDate = portfolioRebalanceCommand.getDate();
 	
-	Collection<PortfolioConstituent> portfolioConstituents = portfolioRebalanceLast.getPortfolioConstituents();
-	Optional.ofNullable(portfolioConstituents)
+	Optional.ofNullable(portfolioRebalanceLast)
+	.map(PortfolioRebalance::getPortfolioConstituents)
 	.orElse(Collections.emptyList())
 	.forEach(constituent->
 	{
@@ -45,7 +47,9 @@ public class MinRunRule implements PortfolioRule
 		    
 		    s.setAttributeValue("min_run_locked", Optional.ofNullable(Boolean.TRUE));
 		    s.setAttributeValue("min_run_locked_since", Optional.ofNullable(inPortfolioSince));
-		    s.setAttributeValue("min_run_locked_rebalance_units", Optional.ofNullable(constituent.getUnits()));
+		    
+		    Optional<Long> constituentUnitsLocked = Optional.ofNullable(constituent.getUnits()).map(u->minRunLockMarketValueRatio.multiply(BigDecimal.valueOf(u)).longValue());
+		    s.setAttributeValue("min_run_locked_rebalance_units", constituentUnitsLocked);
 		});
 	    }
 	});

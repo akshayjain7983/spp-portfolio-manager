@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import io.github.funofprograming.context.ApplicationContext;
@@ -35,15 +34,13 @@ import spp.portfolio.manager.utilities.sql.SQLHelper;
 import spp.portfolio.manager.utilities.sql.SqlQueryHolder;
 import spp.portfolio.manager.utilities.sql.TupleMapper;
 import spp.portfolio.manager.utilities.sql.TuplesResultSetExtractor;
+import spp.portfolio.model.spring.configuration.SppPortfolioManagerConfiguration;
 
 @Repository
 public class SecurityDataDao
 {
-    @Value("${spp.constituents-manager.forecastpscore.history.days:30}")
-    private Integer forecastPScoreHistoryDays;
-    
-    @Value("${spp.constituents-manager.forecastPeriods.enabled:10d,30d,60d,90d}")
-    private Collection<String> forecastPeriodsEnabled;
+    @Autowired
+    private SppPortfolioManagerConfiguration sppPortfolioManagerConfiguration;
     
     @Autowired
     private EntityManager entityManager;
@@ -105,6 +102,8 @@ public class SecurityDataDao
 	if(CollectionUtils.isEmpty(securities))
 	    return;
 	
+	Integer forecastPScoreHistoryDays = sppPortfolioManagerConfiguration.getConstituentManagerConfiguration().getForecastpscoreHistoryDays();
+	Collection<String> forecastPeriods = sppPortfolioManagerConfiguration.getConstituentManagerConfiguration().getForecastPeriods();
 	LocalDate rebalanceDate = daoContext.fetch(Key.of("rebalanceDate", LocalDate.class));
 	Map<String, Collection<SecurityType>> exchangesWithSecurityTypes = daoContext.fetch(Key.of("exchangesWithSecurityTypes", KeyType.<Map<String, Collection<SecurityType>>>of(Map.class)));
 	Collection<Long> securityIds = securities.stream().map(Security::getSecurityId).collect(Collectors.toList());
@@ -116,14 +115,14 @@ public class SecurityDataDao
         {
             Collection<SecurityType> securityTypes = exchangesWithSecurityTypes.get(exchange);
             String sql = SqlQueryHolder.getSql(SqlFiles.CONSTITUENTS_SQL, "loadForecastPScore");
-            sql = SQLHelper.replaceSQLString(sql, loadForecastPScoreHistoryTColumnsWhere());
+            sql = SQLHelper.replaceSQLString(sql, loadForecastPScoreHistoryTColumnsWhere(forecastPScoreHistoryDays));
             Query jpaQuery = entityManager.createNativeQuery(sql, Tuple.class);
             SQLHelper.setObject(jpaQuery, "rebalanceDate", rebalanceDate);
             SQLHelper.setObject(jpaQuery, "securityIds", securityIds);
             SQLHelper.setObject(jpaQuery, "segment", securityTypes.stream().map(SecurityType::name).collect(Collectors.toSet()));
             SQLHelper.setObject(jpaQuery, "exchange", exchange);
             SQLHelper.setObject(jpaQuery, "fpsHistoryDays", forecastPScoreHistoryDays);
-            SQLHelper.setObject(jpaQuery, "forecastPeriod", forecastPeriodsEnabled);
+            SQLHelper.setObject(jpaQuery, "forecastPeriod", forecastPeriods);
             List<Tuple> securitiesForecastPscoreTuples = jpaQuery.getResultList();
             Map<Long, List<Tuple>> forecastPScoresMap = 
         	    Optional.ofNullable(securitiesForecastPscoreTuples)
@@ -153,7 +152,7 @@ public class SecurityDataDao
         }
     }
     
-    private String loadForecastPScoreHistoryTColumnsWhere()
+    private static String loadForecastPScoreHistoryTColumnsWhere(Integer forecastPScoreHistoryDays)
     {
 	StringBuilder sb = new StringBuilder();
 	for(int i=1;i<=forecastPScoreHistoryDays;i++)

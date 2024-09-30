@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -26,12 +27,14 @@ import spp.portfolio.constituents.rules.simple.Security;
 import spp.portfolio.constituents.rules.simple.SecurityType;
 import spp.portfolio.constituents.rules.simple.dao.SecurityDataDao;
 import spp.portfolio.constituents.util.SqlFiles;
+import spp.portfolio.model.spring.configuration.SppPortfolioManagerConfiguration;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @EntityScan(basePackages = {"spp.portfolio"})
 @EnableJpaRepositories
 @ContextConfiguration(classes = {SecurityDataDao.class})
+@EnableConfigurationProperties(SppPortfolioManagerConfiguration.class)
 class SecurityDataDaoTest
 {
     @Autowired

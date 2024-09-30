@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Comparator;
 
-import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Entity;
@@ -12,16 +12,20 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import spp.portfolio.model.securities.Exchange;
+import spp.portfolio.model.securities.ExchangeSegment;
 
 @Data
 @Entity
-@Table(catalog = "spp", schema = "spp", name = "holidays")
+@Table(name = "holidays")
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(of = {"id"})
 @Builder
@@ -36,11 +40,15 @@ public class Holiday implements Comparable<Holiday>
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDate date;
-    private String exchange;
-    private String segment;
+    @JoinColumn(name = "exchange_id", nullable = false)
+    @ManyToOne
+    private Exchange exchange;
+    @JoinColumn(name = "segment_id", nullable = false)
+    @ManyToOne
+    private ExchangeSegment segment;
     private String type;
     private String reason;
-    @LastModifiedBy
+    @LastModifiedDate
     private Instant lastUpdatedTimestamp;
     
     @Override

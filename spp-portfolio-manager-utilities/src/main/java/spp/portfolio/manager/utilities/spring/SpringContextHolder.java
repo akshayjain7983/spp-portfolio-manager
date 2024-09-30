@@ -3,6 +3,7 @@ package spp.portfolio.manager.utilities.spring;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -29,6 +30,11 @@ public class SpringContextHolder implements ApplicationContextAware
     public static <T> T getBean(Class<T> requiredType, Object...args)
     {
         return applicationContext.getBean(requiredType, args);
+    }
+    
+    public static Environment getEnvironment()
+    {
+	return applicationContext.getEnvironment();
     }
 
 }

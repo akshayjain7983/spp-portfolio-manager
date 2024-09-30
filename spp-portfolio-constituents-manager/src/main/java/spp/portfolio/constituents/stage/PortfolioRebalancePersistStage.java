@@ -26,7 +26,7 @@ public class PortfolioRebalancePersistStage implements PortfolioRebalanceStage
     {
         ConcurrentApplicationContext context = (ConcurrentApplicationContext) getGlobalContext(rebalanceContextNameBuilder.apply(portfolioRebalanceCommand));
         PortfolioRebalance portfolioRebalance = context.fetch(portfolioRebalanceKey);
-        Optional<PortfolioRebalance> portfolioRebalanceActivePrevious = portfolioRebalanceRepository.findByPortfolioDefinitionAndDateAndRebalanceTypeAndIsActive(portfolioRebalance.getPortfolioDefinition(), portfolioRebalance.getDate(), portfolioRebalance.getRebalanceType(), Boolean.TRUE);
+        Optional<PortfolioRebalance> portfolioRebalanceActivePrevious = portfolioRebalanceRepository.findByPortfolioDefinitionAndDateAndRebalanceType(portfolioRebalance.getPortfolioDefinition(), portfolioRebalance.getDate(), portfolioRebalance.getRebalanceType());
         portfolioRebalanceActivePrevious.ifPresent(pr->{
             pr.setIsActive(Boolean.FALSE);
             portfolioRebalanceRepository.save(pr);

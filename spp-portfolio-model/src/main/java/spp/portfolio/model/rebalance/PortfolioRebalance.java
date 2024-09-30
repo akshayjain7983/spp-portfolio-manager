@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.UUID;
 
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -30,12 +31,13 @@ import spp.portfolio.model.definition.PortfolioDefinitionConfiguration;
 
 @Data
 @Entity
-@Table(catalog = "spp", schema = "spp", name = "portfolio_rebalance")
+@Table(name = "portfolio_rebalance")
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(of = {"id"})
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("is_active='TRUE'")
 public class PortfolioRebalance
 {
     @Id

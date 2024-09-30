@@ -79,7 +79,7 @@ public class SourceDataRule implements PortfolioRule
         PortfolioRebalanceType portfolioRebalanceType = command.getPortfolioRebalanceType();
         LocalDate rebalanceDate = command.getDate();
         LocalDate previousBusinessDate = findPreviousBusinessDate.apply(portfolioConfiguration.getExchangesWithSecurityTypes(), rebalanceDate);
-        PortfolioRebalance portfolioRebalanceLast = portfolioRebalanceRepository.findByPortfolioDefinitionAndDateAndRebalanceTypeAndIsActive(portfolioDefinition, previousBusinessDate, portfolioRebalanceType, Boolean.TRUE).orElse(null);
+        PortfolioRebalance portfolioRebalanceLast = portfolioRebalanceRepository.findByPortfolioDefinitionAndDateAndRebalanceType(portfolioDefinition, previousBusinessDate, portfolioRebalanceType).orElse(null);
         context.add(portfolioRebalanceLastKey, portfolioRebalanceLast);
     }
     

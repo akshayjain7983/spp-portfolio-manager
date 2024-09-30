@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -29,6 +30,7 @@ import spp.portfolio.model.rebalance.PortfolioRebalance;
 import spp.portfolio.model.rebalance.PortfolioRebalanceType;
 import spp.portfolio.model.spring.PortfolioConfigurationConverter;
 import spp.portfolio.model.spring.PortfolioModelSpringConfiguration;
+import spp.portfolio.model.spring.configuration.SppPortfolioManagerConfiguration;
 
 @DataJpaTest
 @Commit
@@ -39,6 +41,7 @@ import spp.portfolio.model.spring.PortfolioModelSpringConfiguration;
 @ContextConfiguration(classes = {DefaultPortfolioRebalanceExecutor.class, SecurityDataDao.class, PortfolioConfigurationController.class
         , PortfolioConfigurationConverter.class, PortfolioModelSpringConfiguration.class, PortfolioConstituentsSpringConfiguration.class
         , SpringContextHolder.class, JacksonAutoConfiguration.class})
+@EnableConfigurationProperties(SppPortfolioManagerConfiguration.class)
 class DefaultPortfolioRebalanceExecutorTest
 {
     @Autowired

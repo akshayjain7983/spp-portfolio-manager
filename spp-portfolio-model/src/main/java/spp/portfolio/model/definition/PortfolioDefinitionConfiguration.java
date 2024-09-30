@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -28,12 +29,13 @@ import spp.portfolio.model.definition.configuration.PortfolioConfiguration;
 
 @Data
 @Entity
-@Table(catalog = "spp", schema = "spp", name = "portfolio_definition_configuration")
+@Table(name = "portfolio_definition_configuration")
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(of = {"id", "validFrom", "validTo"})
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("is_active='TRUE'")
 public class PortfolioDefinitionConfiguration
 {
     @Id

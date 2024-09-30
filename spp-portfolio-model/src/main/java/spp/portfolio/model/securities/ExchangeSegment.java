@@ -1,11 +1,11 @@
-package spp.portfolio.model.rebalance;
+package spp.portfolio.model.securities;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZoneId;
 
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -20,31 +20,29 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
 @Entity
-@Table(name = "portfolio_rebalance_constituents")
+@Table(name = "exchange_segments")
 @EntityListeners(AuditingEntityListener.class)
 @EqualsAndHashCode(of = {"id"})
-@Builder(toBuilder = true)
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PortfolioConstituent
+public class ExchangeSegment
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @ToString.Exclude
-    @JsonIgnore
+    @JoinColumn(name = "exchange_id", nullable = false)
     @ManyToOne
-    @JoinColumn(name = "portfolio_rebalance_id", nullable = false)
-    private PortfolioRebalance portfolioRebalance;
-    private Long securityId;
-    private BigDecimal price;
-    private Long units;
-    private BigDecimal investmentMarketValue;
-    private BigDecimal weight;
-    private LocalDate inPortfolioSince;
+    private Exchange exchange;
+    private String name;
+    @LastModifiedDate
+    private Instant lastUpdatedTimestamp;
+    private String description;
+    private String status;
+    private LocalTime openTime;
+    private LocalTime closeTime;
+    private ZoneId timezone;
 }

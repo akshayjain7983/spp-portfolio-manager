@@ -14,7 +14,7 @@ import spp.portfolio.model.rebalance.PortfolioRebalanceType;
 @Transactional
 public interface PortfolioRebalanceRepository extends JpaRepository<PortfolioRebalance, Long>
 {
-    Optional<PortfolioRebalance> findByPortfolioDefinitionAndDateAndRebalanceTypeAndIsActive(PortfolioDefinition portfolioDefinition, LocalDate date, PortfolioRebalanceType rebalanceType, Boolean isActive);
+    Optional<PortfolioRebalance> findByPortfolioDefinitionAndDateAndRebalanceType(PortfolioDefinition portfolioDefinition, LocalDate date, PortfolioRebalanceType rebalanceType);
     
-    Optional<PortfolioRebalance> findByRunIdAndIsActive(UUID runId, Boolean isActive);
+    Optional<PortfolioRebalance> findByRunId(UUID runId);
 }

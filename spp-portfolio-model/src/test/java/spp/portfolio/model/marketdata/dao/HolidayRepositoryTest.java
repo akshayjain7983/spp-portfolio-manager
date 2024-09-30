@@ -33,11 +33,11 @@ class HolidayRepositoryTest
     @Test
     public void testSearchByExchangeAndSegmentAndDate()
     {
-        Optional<Holiday> holidayTrue = holidayRepository.searchByExchangeIgnoreCaseAndSegmentIgnoreCaseAndDate("BSE", SecurityType.EQUITY.name(), LocalDate.of(2023, 12, 25));
+        Optional<Holiday> holidayTrue = holidayRepository.searchByExchangeNameIgnoreCaseAndSegmentNameIgnoreCaseAndDate("BSE", SecurityType.EQUITY.name(), LocalDate.of(2023, 12, 25));
         assertNotNull(holidayTrue);
         assertTrue(holidayTrue.isPresent());
         
-        Optional<Holiday> holidayFalse = holidayRepository.searchByExchangeIgnoreCaseAndSegmentIgnoreCaseAndDate("BSE", SecurityType.EQUITY.name(), LocalDate.of(2023, 12, 19));
+        Optional<Holiday> holidayFalse = holidayRepository.searchByExchangeNameIgnoreCaseAndSegmentNameIgnoreCaseAndDate("BSE", SecurityType.EQUITY.name(), LocalDate.of(2023, 12, 19));
         assertNotNull(holidayFalse);
         assertFalse(holidayFalse.isPresent());
     }
@@ -52,7 +52,7 @@ class HolidayRepositoryTest
     @Test
     public void testSearchByExchangeAndSegmentAndDateBetween()
     {
-        NavigableSet<Holiday> holidays = holidayRepository.searchByExchangeAndSegmentAndDateBetween("BSE", "Equity", LocalDate.now().minusYears(1), LocalDate.now());
+        NavigableSet<Holiday> holidays = holidayRepository.searchByExchangeNameIgnoreCaseAndSegmentNameIgnoreCaseAndDateBetween("BSE", "Equity", LocalDate.now().minusYears(1), LocalDate.now());
         assertNotNull(holidays);
         assertFalse(holidays.isEmpty());
     }

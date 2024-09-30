@@ -9,9 +9,12 @@ import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConsta
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.rebalanceContextNameBuilder;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.securityOutpointMapKey;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.sppPortfolioManagerConfigurationKey;
 import static spp.portfolio.manager.utilities.json.JsonUtil.viaJson;
 
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import io.github.funofprograming.context.ConcurrentApplicationContext;
 import io.github.funofprograming.context.impl.ConcurrentApplicationContextImpl;
@@ -20,14 +23,19 @@ import spp.portfolio.constituents.rebalance.PortfolioRebalanceStage;
 import spp.portfolio.constituents.rules.simple.PortfolioConfiguration;
 import spp.portfolio.model.definition.PortfolioDefinitionConfiguration;
 import spp.portfolio.model.rebalance.PortfolioRebalance;
+import spp.portfolio.model.spring.configuration.SppPortfolioManagerConfiguration;
 
 public class PortfolioRebalanceContextSetupStage implements PortfolioRebalanceStage
 {
+    @Autowired
+    private SppPortfolioManagerConfiguration sppPortfolioManagerConfiguration;
+    
     @Override
     public PortfolioRebalance execute(PortfolioRebalanceCommand portfolioRebalanceCommand)
     {
         setGlobalContext(new ConcurrentApplicationContextImpl(rebalanceContextNameBuilder.apply(portfolioRebalanceCommand)));
         ConcurrentApplicationContext context = (ConcurrentApplicationContext) getGlobalContext(rebalanceContextNameBuilder.apply(portfolioRebalanceCommand));
+        context.add(sppPortfolioManagerConfigurationKey, sppPortfolioManagerConfiguration);
         context.add(portfolioRebalanceCommandKey, portfolioRebalanceCommand);
         setPortfolioDefinition(context, portfolioRebalanceCommand);
         setConfiguration(context);
