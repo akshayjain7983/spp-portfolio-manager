@@ -15,4 +15,5 @@ public class PortfolioRebalanceCommand
     private Long portfolioDefinitionId;
     private LocalDate date;
     private PortfolioRebalanceType portfolioRebalanceType;
+    private Boolean debug;
 }

@@ -12,7 +12,7 @@ import spp.portfolio.model.rebalance.PortfolioRebalanceType;
 
 public interface PortfolioConstituentsManager
 {
-    Map<LocalDate, String> rebalance(Long portfolioDefinitionId, PortfolioRebalanceType portfolioRebalanceType, LocalDate fromDate, LocalDate toDate);
+    Map<LocalDate, String> rebalance(Long portfolioDefinitionId, PortfolioRebalanceType portfolioRebalanceType, LocalDate fromDate, LocalDate toDate, Optional<Boolean> debug);
     
     Optional<PortfolioRebalance> getRebalance(@PathVariable UUID runId);
     

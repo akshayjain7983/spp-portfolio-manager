@@ -8,11 +8,11 @@ import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConsta
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceCommandKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.rebalanceContextNameBuilder;
-import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.securityOutpointMapKey;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.securityOutpointsKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.sppPortfolioManagerConfigurationKey;
 import static spp.portfolio.manager.utilities.json.JsonUtil.viaJson;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,7 +46,7 @@ public class PortfolioRebalanceContextSetupStage implements PortfolioRebalanceSt
 
     private void setSecurityOutpointMap(ConcurrentApplicationContext context)
     {
-        context.add(securityOutpointMapKey, new ConcurrentHashMap<Long, String>());        
+        context.add(securityOutpointsKey, new CopyOnWriteArrayList<>());        
     }
 
     private void setPortfolioRebalance(ConcurrentApplicationContext context)

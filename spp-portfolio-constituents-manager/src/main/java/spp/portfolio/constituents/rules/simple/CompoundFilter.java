@@ -17,7 +17,7 @@ public class CompoundFilter extends RelaxableFilter
     private List<Filter> filters;
     
     @Override
-    protected Optional<Security> executeNormalFilter(Optional<Security> security, ConcurrentApplicationContext context)
+    protected Optional<Security> filterNormal(Optional<Security> security, ConcurrentApplicationContext context)
     {
         Optional<Security> filteredSecurity = security;
         List<Boolean> results = new ArrayList<>();
@@ -68,5 +68,11 @@ public class CompoundFilter extends RelaxableFilter
         }
         
         return filteredSecurity;
+    }
+
+    @Override
+    public String getOutpointRepresentation()
+    {
+	return this.toString();
     }
 }

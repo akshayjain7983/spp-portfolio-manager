@@ -17,14 +17,14 @@ public abstract class RelaxableFilter extends MinRunLockableFilter
 {
     protected Map<RelaxationCondition, Filter> relaxedFilters;
     
-    protected Optional<Security> executeNonMinRunLockableFilter(Optional<Security> security, ConcurrentApplicationContext context)
+    protected Optional<Security> filterNonMinRunLockable(Optional<Security> security, ConcurrentApplicationContext context)
     {
 	Optional<Filter> relaxedFilter = getRelaxedFilter(context);
-	Optional<Security> filteredSecurity = relaxedFilter.map(rf->rf.execute(security, context)).orElseGet(()->executeNormalFilter(security, context));
+	Optional<Security> filteredSecurity = relaxedFilter.map(rf->rf.execute(security, context)).orElseGet(()->filterNormal(security, context));
 	return filteredSecurity;
     }
     
-    protected abstract Optional<Security> executeNormalFilter(Optional<Security> security, ConcurrentApplicationContext context);
+    protected abstract Optional<Security> filterNormal(Optional<Security> security, ConcurrentApplicationContext context);
 
     protected Optional<Filter> getRelaxedFilter(ConcurrentApplicationContext context)
     {

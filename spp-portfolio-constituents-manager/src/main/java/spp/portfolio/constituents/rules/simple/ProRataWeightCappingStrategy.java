@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import lombok.ToString;
+
+@ToString
 public class ProRataWeightCappingStrategy implements WeightCappingStrategy
 {
     @Override

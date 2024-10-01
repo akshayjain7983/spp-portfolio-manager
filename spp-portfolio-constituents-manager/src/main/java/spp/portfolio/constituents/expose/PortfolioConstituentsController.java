@@ -52,6 +52,7 @@ public class PortfolioConstituentsController implements PortfolioConstituentsMan
             , @PathVariable PortfolioRebalanceType portfolioRebalanceType
             , @RequestParam LocalDate fromDate
             , @RequestParam LocalDate toDate
+            , @RequestParam(required = false) Optional<Boolean> debug
             )
     {
 	Map<LocalDate, String> commandResult = new LinkedHashMap<>();
@@ -66,6 +67,7 @@ public class PortfolioConstituentsController implements PortfolioConstituentsMan
 	                .portfolioDefinitionId(portfolioDefinitionId)
 	                .portfolioRebalanceType(portfolioRebalanceType)
 	                .date(rebalanceDate)
+	                .debug(debug.orElse(Boolean.FALSE))
 	                .build();
 	        
 	        PortfolioDefinitionConfiguration portfolioDefinitionConfiguration = findPortfolioDefinitionConfiguration.apply(portfolioRebalanceCommand);

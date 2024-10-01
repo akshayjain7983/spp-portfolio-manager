@@ -18,7 +18,7 @@ import io.github.funofprograming.context.ConcurrentApplicationContext;
 import lombok.Data;
 
 @Data
-public class MarketValueSecurityWeightCapper implements SecurityWeightCapper
+public class MarketValueSecurityWeightCapper implements SecurityWeightCapper, SecuritiesOutpointTraceable
 {
     private Map<String, BigDecimal> capWeightsByGroup;
     private WeightCappingStrategy weightCappingStrategy;
@@ -58,6 +58,8 @@ public class MarketValueSecurityWeightCapper implements SecurityWeightCapper
             }
         }
         
+        securities = securities.stream().filter(s->s.getAttributeValue("rebalance_units", Long.class).filter(ru->ru>0L).isPresent()).collect(Collectors.toList()); //filter out 0 rebalance_units/weight securities
+        
         return securities;
     }
 
@@ -67,5 +69,11 @@ public class MarketValueSecurityWeightCapper implements SecurityWeightCapper
                                 .orElse(Collections.emptyList())
                                 .stream()
                                 .collect(Collectors.groupingBy(s->s.getAttributeValue(groupAttribute, Object.class), LinkedHashMap::new, Collectors.toCollection(ArrayList::new)));
+    }
+
+    @Override
+    public String getOutpointRepresentation()
+    {
+	return "Zero Weight @ " + this.toString();
     }
 }

@@ -1,6 +1,6 @@
 package spp.portfolio.constituents.rules.simple;
 
-import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.continueLoop;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.*;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.isInnermostLoopIterationExhausted;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.relaxationCondition;
 
@@ -38,11 +38,12 @@ public class MinSecuritiesCountRule implements PortfolioRule
 	{
 	    
 	    context.add(relaxationCondition, RelaxationCondition.MIN_COUNT); //relax filters if set in config. If not set then this will iterate over loop and fail eventually
-	    continueLoop.accept(context); //min count not met do not execute any more rules like weight capping etc
+	    continueLoop.accept(context); //min count not met do not execute any more rules
 	}
 	else 
 	{
 	    context.erase(relaxationCondition); //all good no more relaxation
+	    breakLoop.accept(context);
 	}
 	    
 	return securities;

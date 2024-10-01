@@ -10,4 +10,5 @@ public class LoopPortfolioRule implements PortfolioRule
     private String loopLabel;
     private Integer maxIterations;
     private Collection<PortfolioRule> portfolioRules;
+    private String startingUniverse;
 }

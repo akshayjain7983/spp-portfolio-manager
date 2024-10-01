@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
@@ -38,6 +37,7 @@ import spp.portfolio.constituents.rules.simple.PortfolioConfiguration;
 import spp.portfolio.constituents.rules.simple.Security;
 import spp.portfolio.constituents.rules.simple.SecurityType;
 import spp.portfolio.constituents.rules.simple.dao.PortfolioRebalanceRepository;
+import spp.portfolio.constituents.rules.simple.dao.PortfolioRebalanceSecurityOutpointRepository;
 import spp.portfolio.constituents.rules.simple.dao.SecurityDataDao;
 import spp.portfolio.manager.utilities.spring.SpringContextHolder;
 import spp.portfolio.model.definition.PortfolioDefinition;
@@ -45,6 +45,7 @@ import spp.portfolio.model.definition.PortfolioDefinitionConfiguration;
 import spp.portfolio.model.exception.SppException;
 import spp.portfolio.model.marketdata.dao.HolidayRepository;
 import spp.portfolio.model.rebalance.PortfolioRebalance;
+import spp.portfolio.model.rebalance.PortfolioRebalanceSecurityOutpoint;
 import spp.portfolio.model.rebalance.PortfolioRebalanceTransaction;
 import spp.portfolio.model.spring.configuration.SppPortfolioManagerConfiguration;
 
@@ -53,7 +54,7 @@ public class PortfolioConstituentsManagerConstants
 {
     public static final Key<SppPortfolioManagerConfiguration> sppPortfolioManagerConfigurationKey = Key.of("sppPortfolioManagerConfiguration", KeyType.<SppPortfolioManagerConfiguration>of(SppPortfolioManagerConfiguration.class));
     public static final Key<Collection<Security>> securitiesUniverseKey = Key.of("securitiesUniverse", KeyType.<Collection<Security>>of(Collection.class));
-    public static final Key<ConcurrentMap<Long, String>> securityOutpointMapKey = Key.of("securityOutpointMap", KeyType.<ConcurrentMap<Long, String>>of(ConcurrentMap.class));
+    public static final Key<Collection<PortfolioRebalanceSecurityOutpoint>> securityOutpointsKey = Key.of("securityOutpoints", KeyType.<Collection<PortfolioRebalanceSecurityOutpoint>>of(Collection.class));
     public static final Key<PortfolioRebalanceCommand> portfolioRebalanceCommandKey = Key.of("portfolioRebalanceCommand", PortfolioRebalanceCommand.class);
     public static final Key<PortfolioRebalance> portfolioRebalanceKey = Key.of("portfolioRebalance", PortfolioRebalance.class);
     public static final Key<PortfolioDefinitionConfiguration> portfolioDefinitionConfigurationKey = Key.of("portfolioDefinitionConfiguration", PortfolioDefinitionConfiguration.class);
@@ -78,6 +79,7 @@ public class PortfolioConstituentsManagerConstants
     public static final Supplier<SecurityDataDao> securityDataDaoSupplier = () -> SpringContextHolder.getBean(SecurityDataDao.class);
     public static final Supplier<PortfolioRebalanceRepository> portfolioRebalanceRepositorySupplier = () -> SpringContextHolder.getBean(PortfolioRebalanceRepository.class);
     public static final Supplier<HolidayRepository> holidayRepositorySupplier = () -> SpringContextHolder.getBean(HolidayRepository.class);
+    public static final Supplier<PortfolioRebalanceSecurityOutpointRepository> portfolioRebalanceSecurityOutpointRepositorySupplier = () -> SpringContextHolder.getBean(PortfolioRebalanceSecurityOutpointRepository.class);
     public static final Supplier<PortfolioConfigurationManager> portfolioConfigurationManagerSupplier = () -> SpringContextHolder.getBean(PortfolioConfigurationManager.class);
     public static final BiFunction<String, ConcurrentApplicationContext, Boolean> isLoopContinueNextIteration = (loopLabel, context) -> Optional.ofNullable(context.fetch(loopRuleStatesKey).peek()).filter(ls->StringUtils.equalsIgnoreCase(loopLabel, ls.loopLabel())).map(ls->ls.continueNextIteration().get()).orElse(Boolean.FALSE);
     public static final Consumer<ConcurrentApplicationContext> continueLoop = context -> Optional.of(isInsideALoop.apply(context)).filter(Boolean::booleanValue).ifPresent(b->context.fetch(loopRuleStatesKey).peek().continueNextIteration().set(true));
