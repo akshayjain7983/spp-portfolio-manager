@@ -72,7 +72,9 @@ public class PortfolioConstituentsController implements PortfolioConstituentsMan
 	        
 	        PortfolioDefinitionConfiguration portfolioDefinitionConfiguration = findPortfolioDefinitionConfiguration.apply(portfolioRebalanceCommand);
 	        Map<String, Collection<SecurityType>> exchangesWithSecurityTypes = portfolioDefinitionConfiguration.getConfiguration().getExchangesWithSecurityTypes();
-	        Map<String, Collection<String>> exchangesWithSecurityTypesStr = exchangesWithSecurityTypes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e->e.getValue().stream().map(SecurityType::name).collect(Collectors.toList())));
+	        Map<String, Collection<spp.portfolio.constituents.rules.simple.SecurityType>> exchangesWithSecurityTypesStr = 
+	        	exchangesWithSecurityTypes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e->e.getValue().stream().map(SecurityType::name).map(spp.portfolio.constituents.rules.simple.SecurityType::valueOf).collect(Collectors.toList())));
+	        
 	        Boolean isHolidayForAnyExchanges = isHolidayForAnyExchange.apply(exchangesWithSecurityTypesStr, portfolioRebalanceCommand.getDate());
 	        
 	        if(!isHolidayForAnyExchanges)

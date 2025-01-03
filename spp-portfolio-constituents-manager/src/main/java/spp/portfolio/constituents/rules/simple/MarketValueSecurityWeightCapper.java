@@ -27,7 +27,6 @@ public class MarketValueSecurityWeightCapper implements SecurityWeightCapper, Se
     public Collection<Security> capWeights(Collection<Security> securities, ConcurrentApplicationContext context)
     {
         BigDecimal portfolioSizeCurrent = context.fetch(portfolioSizeCurrentKey);
-        BigDecimal marketValueTotal = findSumOfSecurityAttribute.apply(securities, "market_value");
         for(String groupAttribute:capWeightsByGroup.keySet())
         {
             BigDecimal groupWeightCap = capWeightsByGroup.get(groupAttribute);
@@ -38,7 +37,7 @@ public class MarketValueSecurityWeightCapper implements SecurityWeightCapper, Se
                 Collection<Security> groupedSecurities = securitiesGrouped.get(groupVal);
                 BigDecimal weightOfGroup = findSumOfSecurityAttribute.apply(groupedSecurities, "market_value_weight");       
                 
-                if(weightOfGroup.compareTo(groupWeightCap) > 0 || marketValueTotal.compareTo(portfolioSizeCurrent) > 0)
+                if(weightOfGroup.compareTo(groupWeightCap) > 0)
                 {
                     context.fetch(isWeightCappingRun).set(true);
                     Map<Long, BigDecimal> existingDistributionMarketValue = groupedSecurities.stream().collect(Collectors.toMap(s->s.getSecurityId(), s->s.getAttributeValue("market_value", BigDecimal.class).orElse(BigDecimal.ZERO)));
@@ -58,7 +57,10 @@ public class MarketValueSecurityWeightCapper implements SecurityWeightCapper, Se
             }
         }
         
-        securities = securities.stream().filter(s->s.getAttributeValue("rebalance_units", Long.class).filter(ru->ru>0L).isPresent()).collect(Collectors.toList()); //filter out 0 rebalance_units/weight securities
+        securities = Optional.ofNullable(securities).orElse(Collections.emptyList()).stream()
+        			.filter(s->s.getAttributeValue("rebalance_units", Long.class).filter(ru->ru>0L).isPresent())
+        			.filter(s->s.getAttributeValue("market_value", BigDecimal.class).isPresent())
+        			.collect(Collectors.toList()); //filter out 0 rebalance_units/weight securities
         
         return securities;
     }

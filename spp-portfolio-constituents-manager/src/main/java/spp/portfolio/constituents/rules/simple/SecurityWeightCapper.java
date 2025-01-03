@@ -12,7 +12,8 @@ import io.github.funofprograming.context.ConcurrentApplicationContext;
 
 @JsonTypeInfo(use = Id.NAME, include = As.PROPERTY, property = "type")
 @JsonSubTypes({
-    @Type(name = "MarketValueSecurityWeightCapper", value = MarketValueSecurityWeightCapper.class)
+    @Type(name = "MarketValueSecurityWeightCapper", value = MarketValueSecurityWeightCapper.class),
+    @Type(name = "PortfolioAmountLimitSecurityWeightCapper", value = PortfolioAmountLimitSecurityWeightCapper.class)
 })
 public interface SecurityWeightCapper
 {

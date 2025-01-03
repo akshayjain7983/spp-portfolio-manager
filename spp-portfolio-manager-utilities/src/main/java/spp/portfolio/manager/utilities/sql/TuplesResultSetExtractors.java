@@ -32,7 +32,8 @@ public class TuplesResultSetExtractors
                 int rowNum = 0;
                 while(tuplesIterator.hasNext())
                 {
-                    T val = tupleMapper.mapTuple(tuplesIterator.next(), rowNum);
+                    Tuple tuple = tuplesIterator.next();
+                    T val = tupleMapper.mapTuple(tuple, rowNum);
                     collection.add(val);
                     rowNum++;
                 }
@@ -54,8 +55,9 @@ public class TuplesResultSetExtractors
                 int rowNum = 0;
                 while(tuplesIterator.hasNext())
                 {
-                    K key = tupleKeyMapper.mapTuple(tuplesIterator.next(), rowNum);
-                    V value = tupleValueMapper.mapTuple(tuplesIterator.next(), rowNum);
+                    Tuple tuple = tuplesIterator.next();
+                    K key = tupleKeyMapper.mapTuple(tuple, rowNum);
+                    V value = tupleValueMapper.mapTuple(tuple, rowNum);
                     map.put(key, value);
                     rowNum++;
                 }
@@ -93,8 +95,9 @@ public class TuplesResultSetExtractors
                 int rowNum = 0;
                 while(tuplesIterator.hasNext())
                 {
-                    K key = tupleKeyMapper.mapTuple(tuplesIterator.next(), rowNum);
-                    V value = tupleValueMapper.mapTuple(tuplesIterator.next(), rowNum);
+                    Tuple tuple = tuplesIterator.next();
+                    K key = tupleKeyMapper.mapTuple(tuple, rowNum);
+                    V value = tupleValueMapper.mapTuple(tuple, rowNum);
                     C collection = map.get(key);
                     if(CollectionUtils.isEmpty(collection))
                     {

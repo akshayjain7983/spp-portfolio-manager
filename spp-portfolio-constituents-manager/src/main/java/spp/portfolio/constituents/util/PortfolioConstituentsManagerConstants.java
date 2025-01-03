@@ -85,13 +85,14 @@ public class PortfolioConstituentsManagerConstants
     public static final Consumer<ConcurrentApplicationContext> continueLoop = context -> Optional.of(isInsideALoop.apply(context)).filter(Boolean::booleanValue).ifPresent(b->context.fetch(loopRuleStatesKey).peek().continueNextIteration().set(true));
     public static final Supplier<Environment> environmentSupplier = () -> SpringContextHolder.getEnvironment();
     
-    public static final BiFunction<Map<String, Collection<String>>, LocalDate, Boolean> isHolidayForAnyExchange =
+    public static final BiFunction<Map<String, Collection<SecurityType>>, LocalDate, Boolean> isHolidayForAnyExchange =
             (exchangesWithSecurityTypes, date) -> {
                 
+        	Map<String, Collection<String>> exchangesWithSecurityTypesStr = exchangesWithSecurityTypes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e->e.getValue().stream().map(SecurityType::name).collect(Collectors.toList())));
                 HolidayRepository holidayRepository = holidayRepositorySupplier.get();
                 for(String exchange: exchangesWithSecurityTypes.keySet())
                 {
-                    for(String securityType:exchangesWithSecurityTypes.get(exchange))
+                    for(String securityType:exchangesWithSecurityTypesStr.get(exchange))
                     {
                         if(holidayRepository.isHoliday(exchange, securityType, date))
                             return Boolean.TRUE;
@@ -105,12 +106,22 @@ public class PortfolioConstituentsManagerConstants
             (exchangesWithSecurityTypes, currentDate) -> {
                 
                 LocalDate previousBusinessDate = currentDate.minusDays(1);
-                Map<String, Collection<String>> exchangesWithSecurityTypesStr = exchangesWithSecurityTypes.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e->e.getValue().stream().map(SecurityType::name).collect(Collectors.toList())));
-                while(isHolidayForAnyExchange.apply(exchangesWithSecurityTypesStr, previousBusinessDate))
+                while(isHolidayForAnyExchange.apply(exchangesWithSecurityTypes, previousBusinessDate))
                 {
                     previousBusinessDate = previousBusinessDate.minusDays(1);
                 }
                 return previousBusinessDate;
+            };
+            
+    public static final BiFunction<Map<String, Collection<SecurityType>>, LocalDate, LocalDate> findNextBusinessDate = 
+            (exchangesWithSecurityTypes, currentDate) -> {
+                
+                LocalDate nextBusinessDate = currentDate.plusDays(1);
+                while(isHolidayForAnyExchange.apply(exchangesWithSecurityTypes, nextBusinessDate))
+                {
+                    nextBusinessDate = nextBusinessDate.plusDays(1);
+                }
+                return nextBusinessDate;
             };
    
     public static final Function<PortfolioRebalanceCommand, PortfolioDefinitionConfiguration> findPortfolioDefinitionConfiguration = 

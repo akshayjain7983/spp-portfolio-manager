@@ -1,7 +1,9 @@
 package spp.portfolio.constituents.rules.simple;
 
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.findNextBusinessDate;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.findPortfolioInvestmentAmountLimit;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.findPreviousBusinessDate;
+import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.isHolidayForAnyExchange;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioConfigurationKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioDefinitionConfigurationKey;
 import static spp.portfolio.constituents.util.PortfolioConstituentsManagerConstants.portfolioRebalanceCommandKey;
@@ -90,11 +92,15 @@ public class SourceDataRule implements PortfolioRule
         PortfolioRebalanceCommand portfolioRebalanceCommand = context.fetch(portfolioRebalanceCommandKey);
         LocalDate rebalanceDate = portfolioRebalanceCommand.getDate();
         LocalDate portfolioStartDate = portfolioDefinitionConfiguration.getPortfolioDefinition().getEffectiveDate();
+        
+        PortfolioConfiguration portfolioConfiguration = context.fetch(portfolioConfigurationKey);
+        Map<String, Collection<SecurityType>> exchangesWithSecurityTypes = portfolioConfiguration.getExchangesWithSecurityTypes();
+        LocalDate firstRebalanceAfterPortfolioStartDate = isHolidayForAnyExchange.apply(exchangesWithSecurityTypes, portfolioStartDate) ? findNextBusinessDate.apply(exchangesWithSecurityTypes, portfolioStartDate) : portfolioStartDate; 
         LocalDate portfolioConfigValidFrom = portfolioDefinitionConfiguration.getValidFrom();
         Boolean portfolioInvestmentAmountLimitUpdated = portfolioDefinitionConfiguration.getConfiguration().getPortfolioInvestmentAmountLimitUpdated();
         BigDecimal portfolioSizeCurrent = portfolioInvestmentAmountLimit;
         
-        if(!rebalanceDate.isEqual(portfolioStartDate)
+        if(!rebalanceDate.isEqual(firstRebalanceAfterPortfolioStartDate)
                 && !(rebalanceDate.isEqual(portfolioConfigValidFrom) && portfolioInvestmentAmountLimitUpdated))
         {
             Optional<PortfolioRebalance> portfolioRebalanceLast = Optional.ofNullable(context.fetch(portfolioRebalanceLastKey));

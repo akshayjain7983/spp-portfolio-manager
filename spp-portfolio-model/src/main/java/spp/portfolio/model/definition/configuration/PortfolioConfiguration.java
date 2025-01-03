@@ -15,5 +15,6 @@ public class PortfolioConfiguration
     private final BigDecimal portfolioInvestmentAmountLimit;
     private final Boolean portfolioInvestmentAmountLimitUpdated;
     private Map<String, Collection<SecurityType>> exchangesWithSecurityTypes;
+    private PortfolioRebalanceFrequency portfolioRebalanceFrequency;
     private PortfolioConfigurationConstituents portfolioConfigurationConstituents;
 }

@@ -41,7 +41,7 @@ public class PortfolioConstituentsSpringConfiguration
     ExecutorService portfolioRebalanceTaskExecutor() 
     {
 	return
-            	Executors.newFixedThreadPool(2
+            	Executors.newFixedThreadPool(1
             		, r->{
             		    AtomicInteger counter = new AtomicInteger(1);
             		    return new Thread(Thread.currentThread().getThreadGroup(), r, "PortfolioRebalanceTaskExecutor-%d".formatted(counter.incrementAndGet()));
